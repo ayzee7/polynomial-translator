@@ -65,8 +65,17 @@ Monom Monom::operator*(const Monom& other) {
 	Monom res = *this;
 	res.coef *= other.coef;
 	res.powX += other.powX;
+	if (res.powX < 0 || res.powX > 10) {
+		throw "x power overflow";
+	}
 	res.powY += other.powY;
+	if (res.powY < 0 || res.powY > 10) {
+		throw "y power overflow";
+	}
 	res.powZ += other.powZ;
+	if (res.powZ < 0 || res.powZ > 10) {
+		throw "z power overflow";
+	}
 	return res;
 }
 
