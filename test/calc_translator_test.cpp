@@ -1,6 +1,6 @@
 #include <gtest.h>
-#include "calc/calc.h"
-#include "parser/parser.h"
+#include "calc.h"
+#include "parser.h"
 
 class calc_test : public ::testing::Test {
 protected:

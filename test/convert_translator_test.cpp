@@ -1,6 +1,6 @@
 #include <gtest.h>
-#include "converter/converter.h"
-#include "parser/parser.h"
+#include "converter.h"
+#include "parser.h"
 
 class converter_test : public::testing::Test
 {

@@ -1,5 +1,5 @@
 #include <gtest.h>
-#include "connect/connect.h"
+#include "connect.h"
 
 class test_connection : public::testing::Test
 {

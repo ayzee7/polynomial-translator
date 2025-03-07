@@ -1,5 +1,5 @@
 #include <gtest.h>
-#include "parser/parser.h"
+#include "parser.h"
 
 class test_term_analis : public::testing::Test
 {
