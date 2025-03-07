@@ -118,8 +118,8 @@ public:
 		Node<T>* ptr;
 	};
 
-	Iterator begin() { return Iterator(first); }
-	Iterator end() { return Iterator(nullptr); }
+	Iterator begin() const { return Iterator(first); }
+	Iterator end() const { return Iterator(nullptr); }
 
 	void print() {
 		std::cout << "(";

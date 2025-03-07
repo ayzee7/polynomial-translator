@@ -27,7 +27,7 @@ int Monom::compare(const Monom& first, const Monom& second) {
 
 Monom::Monom() {}
 
-Monom::Monom(int coef, int powX, int powY, int powZ) {
+Monom::Monom(double coef, int powX, int powY, int powZ) {
 	if (powX < 0 || powX > 10) {
 		throw "invalid x power value";
 	}
@@ -79,7 +79,7 @@ Monom Monom::operator*(const Monom& other) {
 	return res;
 }
 
-Monom Monom::operator*(int mult) {
+Monom Monom::operator*(double mult) {
 	Monom res = *this;
 	res.coef *= mult;
 	return res;
@@ -112,7 +112,7 @@ Polynom::Polynom(const List<Monom>& poly) {
 	polynom = poly;
 }
 
-Polynom Polynom::operator+(Polynom& other) {
+Polynom Polynom::operator+(const Polynom& other) {
 	Polynom *res = new Polynom();
 	res->polynom.insert_front(Monom());
 	auto res_ptr = res->polynom.begin();
@@ -182,7 +182,7 @@ Polynom Polynom::operator+(const Monom& other) {
 	return *res;
 }
 
-Polynom Polynom::operator-(Polynom& other) {
+Polynom Polynom::operator-(const Polynom& other) {
 	Polynom* res = new Polynom();
 	res->polynom.insert_front(Monom());
 	auto res_ptr = res->polynom.begin();
@@ -252,7 +252,7 @@ Polynom Polynom::operator-(Monom& other) {
 	return *res;
 }
 
-Polynom Polynom::operator*(Polynom& other) {
+Polynom Polynom::operator*(const Polynom& other) {
 	Polynom* res_sum = new Polynom();
 	for (auto ptr1 = polynom.begin(); ptr1 != polynom.end(); ++ptr1) {
 		Polynom res;
@@ -289,7 +289,7 @@ Polynom Polynom::operator*(int mult) {
 	return *res;
 }
 
-bool Polynom::operator==(Polynom& other) {
+bool Polynom::operator==(const Polynom& other) {
 	if (polynom.size() != other.polynom.size()) {
 		return false;
 	}
@@ -303,7 +303,7 @@ bool Polynom::operator==(Polynom& other) {
 	return true;
 }
 
-bool Polynom::operator!=(Polynom& other) {
+bool Polynom::operator!=(const Polynom& other) {
 	return !(*this == other);
 }
 

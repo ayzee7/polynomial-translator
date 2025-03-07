@@ -4,7 +4,7 @@
 
 class Monom {
 
-	int coef;
+	double coef;
 	int powX;
 	int powY;
 	int powZ;
@@ -17,7 +17,7 @@ public:
 
 	Monom();
 
-	Monom(int coef, int powX, int powY, int powZ);
+	Monom(double coef, int powX, int powY, int powZ);
 
 	static int compare(const Monom& first, const Monom& second);
 
@@ -27,7 +27,7 @@ public:
 
 	Monom operator*(const Monom& other);
 
-	Monom operator*(int mult);
+	Monom operator*(double mult);
 
 	bool operator==(const Monom& other);
 
@@ -49,23 +49,23 @@ public:
 
 	Polynom(const List<Monom>& poly);
 
-	Polynom operator+(Polynom& other);
+	Polynom operator+(const Polynom& other);
 
 	Polynom operator+(const Monom& other);
 
-	Polynom operator-(Polynom& other);
+	Polynom operator-(const Polynom& other);
 
 	Polynom operator-(Monom& other);
 
-	Polynom operator*(Polynom& other);
+	Polynom operator*(const Polynom& other);
 
 	Polynom operator*(const Monom& other);
 
 	Polynom operator*(int mult);
 
-	bool operator==(Polynom& other);
+	bool operator==(const Polynom& other);
 
-	bool operator!=(Polynom& other);
+	bool operator!=(const Polynom& other);
 
 	void printout();
 
