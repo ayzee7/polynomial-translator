@@ -25,6 +25,15 @@ int Monom::compare(const Monom& first, const Monom& second) {
 	return 0;
 }
 
+double Monom::get_coeff() const
+{
+	return coef;
+}
+std::vector<int> Monom::get_value() const
+{
+	std::vector<int> v = { powX, powY, powZ };
+	return v;
+}
 Monom::Monom() {}
 
 Monom::Monom(double coef, int powX, int powY, int powZ) {
@@ -289,7 +298,8 @@ Polynom Polynom::operator*(int mult) {
 	return *res;
 }
 
-bool Polynom::operator==(const Polynom& other) {
+bool Polynom::operator==(const Polynom& other) const
+{
 	if (polynom.size() != other.polynom.size()) {
 		return false;
 	}
@@ -303,14 +313,27 @@ bool Polynom::operator==(const Polynom& other) {
 	return true;
 }
 
-bool Polynom::operator!=(const Polynom& other) {
+bool Polynom::operator!=(const Polynom& other) const
+{
 	return !(*this == other);
 }
 
-void Polynom::printout() {
+void Polynom::printout() 
+{
 	polynom.print();
 }
 
-int Polynom::size() {
+int Polynom::size() const
+{
 	return polynom.size();
+}
+std::ostream& operator<<(std::ostream& ostr, const Polynom& m)
+{
+
+	for (List<Monom>::Iterator it = m.polynom.begin(); it != m.polynom.end(); it++)
+	{
+		ostr << "k = " << (*it).val.get_coeff() << " ";
+		ostr << "pow = " << (*it).val.get_value()[0] << " "<< (*it).val.get_value()[1]<< " "<<(*it).val.get_value()[2] << std::endl;
+	}
+	return ostr;
 }

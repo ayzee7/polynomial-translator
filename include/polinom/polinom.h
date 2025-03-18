@@ -1,6 +1,7 @@
 #pragma once
 #include "List.h"
 #include <iostream>
+#include <vector>
 
 class Monom {
 
@@ -35,6 +36,9 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& ostr, const Monom& m);
 
+	double get_coeff() const;
+	std::vector<int> get_value() const;
+
 };
 
 class Polynom {
@@ -63,11 +67,14 @@ public:
 
 	Polynom operator*(int mult);
 
-	bool operator==(const Polynom& other);
+	bool operator==(const Polynom& other) const;
 
-	bool operator!=(const Polynom& other);
+	bool operator!=(const Polynom& other) const;
 
 	void printout();
 
-	int size();
+	int size() const;
+
+
+	friend std::ostream& operator<<(std::ostream& ostr, const Polynom& m);
 };

@@ -1,27 +1,28 @@
 #include "connect.h"
-void Connect::handler(std::map<std::string, double>& values, std::vector<Term>& terms)
+void Connect::handler(std::map<std::string, Polynom>& values, std::vector<Term>& terms)
 {
-	std::vector<double> operands;
-	std::vector<Term> post_str;
-	double ans;
+	std::vector<Polynom> operands;
+	std::vector<std::string> operators;
+	std::vector<Term::Type> post_str;
+	Polynom ans;
 
 
-	if (terms.size() >= 3 && terms[1].get_value() == "=")
+	if (terms.size() >= 3 && terms[1].get_name() == "=")
 	{
-		std::string value = terms[0].get_value();
+		std::string value = terms[0].get_name();
 		terms.erase(terms.begin(), terms.begin() + 2);
-		post_str = Converter::conv(terms, operands, values);
+		post_str = Converter::conv(terms, operands,operators, values);
 
 		if (values.count(value) != 0 && !post_str.empty()	)
 		{
-			values[value] = Calc::Calculate(post_str, operands);
+			values[value] = Calc::Calculate(post_str, operands, operators);
 			std::cout << "Click ESC to close or ENTER to continue";
 		}
 		if (values.count(value) == 0 && !post_str.empty())
 		{
-			std::pair < std::string, double> a;
+			std::pair < std::string, Polynom> a;
 			a.first = value;
-			a.second = Calc::Calculate(post_str, operands);
+			a.second = Calc::Calculate(post_str, operands,operators);
 			values.insert(a);
 			std::cout << "Click ESC to close or ENTER to continue";
 		}
@@ -33,7 +34,7 @@ void Connect::handler(std::map<std::string, double>& values, std::vector<Term>& 
 	}
 	else
 	{
-		post_str = Converter::conv(terms, operands, values);
+		post_str = Converter::conv(terms, operands, operators, values);
 		if (post_str.empty() == true)
 		{
 			std::cout << "Click ESC to close or ENTER to continue";
@@ -41,7 +42,7 @@ void Connect::handler(std::map<std::string, double>& values, std::vector<Term>& 
 		}
 		else
 		{
-			ans = Calc::Calculate(post_str, operands);
+			ans = Calc::Calculate(post_str, operands, operators);
 			std::cout << ans << std::endl;
 			std::cout << "Click ESC to close or ENTER to continue";
 		}
@@ -51,14 +52,12 @@ void Connect::handler(std::map<std::string, double>& values, std::vector<Term>& 
 }
 void Connect::connection()
 {
-	std::map<std::string, double> values;
+	std::map<std::string, Polynom> values;
 
-	Interface::instraction();
 	char ch;
 	do {
 		std::string str;
-		str = Parser::synt_analis();
-		std::vector<Term> terms = Parser::term_analis(str);
+		std::vector<Term> terms = Parser::pars(str);
 
 		Connect::handler(values, terms);
 		
