@@ -97,21 +97,28 @@ TEST(OrderedTable, CanFind) {
 	table.insert("f", p);
 	table.insert("g", p);
 	table.insert("b", p);
+	table.insert("c", p);
 
-	auto it = table.find("f");
-	ASSERT_EQ(it.key(), "f");
+	auto it = table.find("g");
+	EXPECT_EQ(it.key(), "g");
+	it = table.find("a");
+	EXPECT_EQ(it.key(), "a");
 }
 
 TEST(OrderedTable, FindingNonExistingElementReturnsEndIterator) {
 	OrderedTable<std::string, Polynom> table;
 	Polynom p(Monom(1, 1, 1, 1));
-	table.insert("a", p);
 	table.insert("f", p);
 	table.insert("g", p);
 	table.insert("b", p);
+	table.insert("d", p);
 
 	auto it = table.find("p");
-	ASSERT_EQ(it, table.end());
+	EXPECT_EQ(it, table.end());
+	it = table.find("c");
+	EXPECT_EQ(it, table.end());
+	it = table.find("a");
+	EXPECT_EQ(it, table.end());
 }
 
 TEST(OrderedTable, CanReturnIfEmpty) {

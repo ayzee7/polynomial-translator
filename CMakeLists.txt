@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 
-set(PROJECT_NAME polynom_translator)
-project(${PROJECT_NAME})
+project(polynom-translator CXX)
 
 file(GLOB arithm_translator_files "include/arithm_translator/*.h" "include/arithm_translator/*.cpp")
 file(GLOB array_files "include/array/*.h" "include/array/*.cpp")

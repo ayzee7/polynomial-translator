@@ -29,6 +29,10 @@ public:
 
 	Monom operator*(double mult);
 
+	Monom operator/(const Monom& other);
+
+	Monom operator/(double mult);
+
 	bool operator==(const Monom& other);
 
 	bool operator!=(const Monom& other);
@@ -62,6 +66,12 @@ public:
 	Polynom operator*(const Monom& other);
 
 	Polynom operator*(int mult);
+
+	Polynom operator/(const Polynom& other);
+
+	Polynom operator/(const Monom& other);
+
+	Polynom operator/(int mult);
 
 	bool operator==(const Polynom& other);
 
