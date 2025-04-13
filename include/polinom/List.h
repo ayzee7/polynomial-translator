@@ -137,6 +137,7 @@ public:
 	}
 
 	List(List&& other) noexcept {
+		sz = other.sz;
 		first = other.first;
 		other.first = nullptr;
 	}
