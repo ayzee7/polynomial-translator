@@ -37,13 +37,13 @@ std::vector<int> Monom::get_value() const
 Monom::Monom() {}
 
 Monom::Monom(double coef, int powX, int powY, int powZ) {
-	if (powX < 0 || powX > 10) {
+	if (powX < 0 || powX > 9) {
 		throw "invalid x power value";
 	}
-	if (powY < 0 || powY > 10) {
+	if (powY < 0 || powY > 9) {
 		throw "invalid y power value";
 	}
-	if (powZ < 0 || powZ > 10) {
+	if (powZ < 0 || powZ > 9) {
 		throw "invalid z power value";
 	}
 	this->coef = coef;
@@ -74,15 +74,15 @@ Monom Monom::operator*(const Monom& other) {
 	Monom res = *this;
 	res.coef *= other.coef;
 	res.powX += other.powX;
-	if (res.powX < 0 || res.powX > 10) {
+	if (res.powX < 0 || res.powX > 9) {
 		throw "x power overflow";
 	}
 	res.powY += other.powY;
-	if (res.powY < 0 || res.powY > 10) {
+	if (res.powY < 0 || res.powY > 9) {
 		throw "y power overflow";
 	}
 	res.powZ += other.powZ;
-	if (res.powZ < 0 || res.powZ > 10) {
+	if (res.powZ < 0 || res.powZ > 9) {
 		throw "z power overflow";
 	}
 	return res;
@@ -91,6 +91,30 @@ Monom Monom::operator*(const Monom& other) {
 Monom Monom::operator*(double mult) {
 	Monom res = *this;
 	res.coef *= mult;
+	return res;
+}
+
+Monom Monom::operator/(const Monom& other) {
+	Monom res = *this;
+	res.coef /= other.coef;
+	res.powX -= other.powX;
+	if (res.powX < 0 || res.powX > 9) {
+		throw "x power overflow";
+	}
+	res.powY -= other.powY;
+	if (res.powY < 0 || res.powY > 9) {
+		throw "y power overflow";
+	}
+	res.powZ -= other.powZ;
+	if (res.powZ < 0 || res.powZ > 9) {
+		throw "z power overflow";
+	}
+	return res;
+}
+
+Monom Monom::operator/(double mult) {
+	Monom res = *this;
+	res.coef /= mult;
 	return res;
 }
 
@@ -298,8 +322,44 @@ Polynom Polynom::operator*(int mult) {
 	return *res;
 }
 
-bool Polynom::operator==(const Polynom& other) const
-{
+Polynom Polynom::operator/(const Polynom& other) {
+	Polynom* res_sum = new Polynom();
+	for (auto ptr1 = polynom.begin(); ptr1 != polynom.end(); ++ptr1) {
+		Polynom res;
+		res.polynom.insert_front(Monom());
+		auto res_ptr = res.polynom.begin();
+		for (auto ptr2 = other.polynom.begin(); ptr2 != other.polynom.end(); ++ptr2, ++res_ptr) {
+			res.polynom.insert_after(ptr1.value() / ptr2.value(), res_ptr);
+		}
+		res.polynom.erase_front();
+		*res_sum = *res_sum + res;
+	}
+	return *res_sum;
+}
+
+Polynom Polynom::operator/(const Monom& other) {
+	Polynom* res = new Polynom();
+	res->polynom.insert_front(Monom());
+	auto res_ptr = res->polynom.begin();
+	for (auto ptr = polynom.begin(); ptr != polynom.end(); ++ptr, ++res_ptr) {
+		res->polynom.insert_after(ptr.value() / other, res_ptr);
+	}
+	res->polynom.erase_front();
+	return *res;
+}
+
+Polynom Polynom::operator/(int mult) {
+	Polynom* res = new Polynom();
+	res->polynom.insert_front(Monom());
+	auto res_ptr = res->polynom.begin();
+	for (auto ptr = polynom.begin(); ptr != polynom.end(); ++ptr, ++res_ptr) {
+		res->polynom.insert_after(ptr.value() / mult, res_ptr);
+	}
+	res->polynom.erase_front();
+	return *res;
+}
+
+bool Polynom::operator==(const Polynom& other) const {
 	if (polynom.size() != other.polynom.size()) {
 		return false;
 	}
