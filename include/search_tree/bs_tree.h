@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 
 template <class TKey, class TValue>
 class BSTree {
@@ -223,7 +224,10 @@ public:
 		Node<TKey, TValue>* ptr;
 	};
 
-	Iterator begin() { return Iterator(find(print_keys()[0])); }
+	Iterator begin() { 
+		if (!root_node) return Iterator(nullptr);
+		return Iterator(find(print_keys()[0])); 
+	}
 	Iterator root() { return Iterator(root_node); }
 	Iterator null() { return Iterator(nullptr); }
 

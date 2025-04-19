@@ -1,6 +1,10 @@
 #include <gtest.h>
 #include "ord_arr.h"
 #include "polinom.h"
+#include <numeric>
+#include <algorithm>
+#include <random>
+#include <chrono>
 
 //	Iterator tests
 
@@ -157,4 +161,20 @@ TEST(OrderedTable, ThrowsWhenRequestingNonExistingElement) {
 	table.insert("a", p1);
 	table.insert("b", p2);
 	ASSERT_ANY_THROW(table["c"]);
+}
+
+TEST(OrderedTable, StressTestInsertHundredThousand) {
+	OrderedTable<int, Polynom> t;
+	Polynom p(Monom(1, 1, 1, 1));
+	std::vector<int> keys(10000);
+	std::iota(keys.begin(), keys.end(), 1);
+	std::shuffle(keys.begin(), keys.end(), std::mt19937{ std::random_device{}() });
+
+	auto start = std::chrono::high_resolution_clock::now();
+	for (int key : keys) {
+		t.insert(key, p);
+	}
+	auto fin = std::chrono::high_resolution_clock::now();
+	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
+	ASSERT_NE(t.begin(), t.end());
 }
