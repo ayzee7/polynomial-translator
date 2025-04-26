@@ -1,41 +1,36 @@
 #pragma once
-#include <iostream>
+#include <vector>
 
-template <template<typename, typename... > class T_cont, class T>
-
-class Stack
-{
-	T_cont<T> data;
+template <class T, class TCont = std::vector<T>>
+class Stack {
+	TCont data;
+	
 public:
-	Stack(const T_cont<T>& container)
-	{
-		data = container;
-	}
-	void push(const T& elem)
-	{
+	Stack() {}
+
+	void push(T elem) {
 		data.push_back(elem);
 	}
-	void pop()
-	{
-		if (data.size() != 0)
-			data.pop_back();
-		else
-			throw 0;
+
+	T pop() {
+		T res = top();
+		data.pop_back();
+		return res;
 	}
-	T& top()
-	{
-		return data.back();
+
+	T& top() {
+		return data[data.size() - 1];
 	}
-	void clear()
-	{
+
+	void clear() {
 		data.clear();
 	}
-	size_t size() const
-	{
+
+	size_t size() {
 		return data.size();
 	}
-	bool empty() const
-	{
+
+	bool empty() {
 		return data.empty();
 	}
 };

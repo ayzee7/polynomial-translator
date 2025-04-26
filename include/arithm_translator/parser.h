@@ -1,52 +1,70 @@
-#pragma once
-#include <iostream>
-#include "interface.h"
-#include <conio.h>
-#include "stack.h"
-#include <vector>
+//#pragma once
+#ifndef PARSER_H
+#define PARSER_H
+
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <string>
+#include <vector>
+#include "polinom.h"
 
+using namespace std;
 
-class Term
-{
+class Term {
 public:
-	enum class Type
-	{
-		NUMBER,
+
+	enum class Type {
+		POLYNOM,
 		OPERATOR,
-		OPEN_BRACK,
-		CLOSE_BRACK,
-		VALUE,
-		EQ
+		OPEN_BRACKET,
+		CLOSE_BRACKET,
+		VAR,
+		VAR_ERROR,
+		OPER_ERROR
 	};
-	class CONSTANTS
-	{
-	public:
-		static double pi;
-		static double e;
-	};
-private:
-	Type type;
-	std::string value_str;
-public:
-	Term(double value);
-	Term(char ch);
-	Term(std::string str);
-	
-	static double to_value(std::string str);
-	std::string get_value() const;
-	Type get_type() const;
-	bool operator==(const Term& other) const;
 
+	Term(char c);
+	Term(string s);
+	Term(Polynom p);
+
+	Type get_type();
+	
+	string get_value();
+
+	Polynom get_polynom();
+
+private:
+
+	Type type;
+	string value;
+	Polynom polynom_value;
 };
-class Parser
-{	
+
+class Parser {
 public:
-	static void del_ch(std::string& input, Stack<std::vector, int>& S,int& status, int& parenthesis_counter);
-	static int add_ch(std::string& input, Stack<std::vector, int>& S, int status, char& ch);
-	static std::vector<char> pars(std::string str);
-	static std::string synt_analis();
-	static std::vector<Term> term_analis(std::string str);
-	static char synt_analis_fsm(int& parenthesis_counter, std::string& input, Stack<std::vector, int>& S, int status);
-	static void value_analis_fsm(char ch,std::string input, Stack<std::vector, int> S);
+	enum {
+		STATE_INIT,
+		STATE_OPERATOR,
+		STATE_ERROR,
+		STATE_NUM_DOUBLE,
+		STATE_VAR,
+		STATE_NUM_INT,
+		STATE_X_POW,
+		STATE_Y_POW,
+		STATE_Z_POW,
+		STATE_X_AWAIT_POW_SIGN,
+		STATE_Y_AWAIT_POW_SIGN,
+		STATE_Z_AWAIT_POW_SIGN,
+		STATE_X_AFTER_POW,
+		STATE_Y_AFTER_POW,
+		STATE_Z_AFTER_POW,
+	} STATES;
+
+	void lvalue_analysis(string lvalue);
+
+	void syntax_analysis(string expr);
+
+	vector<Term> get_terms(string expr);
 };
+
+#endif

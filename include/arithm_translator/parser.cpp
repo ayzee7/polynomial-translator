@@ -1,830 +1,754 @@
 #include "parser.h"
-double Term::CONSTANTS::pi = 3.14159265359;
-double Term::CONSTANTS::e = 2.71828182846;
-std::vector<char> Parser::pars(std::string str)
-{
-	std::vector<char> v{};
-	for (char ch : str)
-		v.push_back(ch);
-	return v;
-}
-Term::Term(double value) :type(Type::NUMBER), value_str(std::to_string(value)) {}
-Term::Term(char ch)
-{
-	if (ch == 40)
-	{
-		type = Type::OPEN_BRACK;
-		value_str.push_back(ch);
+
+Term::Term(char c) {
+	if (c == '(') {
+		type = Type::OPEN_BRACKET;
 	}
-	if (ch == 41)
-	{
-		type = Type::CLOSE_BRACK;
-		value_str.push_back(ch);
+	else if (c == ')') {
+		type = Type::CLOSE_BRACKET;
 	}
-	if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-	{
+	else if (c == '+' || c == '-' || c == '*' || c == '/') {
 		type = Type::OPERATOR;
-		value_str.push_back(ch);
 	}
-	if (ch == 61)
-	{
-		type = Type::EQ;
-		value_str.push_back(ch);
-	}
+	value = string{c};
 }
-Term::Term(std::string str)
-{
-	if (str == "pi" || str == "PI" || str == "Pi")
-	{
-		type = Type::NUMBER;
-		value_str = std::to_string(Term::CONSTANTS::pi);
+
+Term::Term(string s) {
+	if (s == "var_error") {
+		type = Type::VAR_ERROR;
 	}
-	else if (str == "e")
-	{
-		type = Type::NUMBER;
-		value_str = std::to_string(Term::CONSTANTS::e);
+	else if (s == "oper_error") {
+		type = Type::OPER_ERROR;
 	}
-	else
-	{
-		type = Type::VALUE;
-		value_str = str;
+	else {
+		type = Type::VAR;
 	}
+	value = s;
 }
-double Term::to_value(std::string str)
-{
-	return std::stod(str);
+
+Term::Term(Polynom p) {
+	type = Type::POLYNOM;
+	polynom_value = p;
 }
-std::string Term::get_value() const
-{
-	return value_str;
-}
-Term::Type Term::get_type() const
-{
+
+Term::Type Term::get_type() {
 	return type;
 }
-bool Term::operator==(const Term& other) const
-{
-	return (get_type() == other.get_type() && get_value() == other.get_value());
-}
-std::vector<Term> Parser::term_analis(std::string str)
-{
-	std::vector<Term> output {};
 
-	int status = 0;
-	std::string str_value;
-	for (char ch : str)
-	{
-		switch (status)
-		{
-		case 0:
-			if (ch == 40)
-			{
-				status = 7;
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 1;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 || ch <= 90)
-			{
-				status = 8;
-				str_value.push_back(ch);
-				break;
-			}
-		case 1:
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 1;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 46)
-			{
-				status = 6;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = 2;
-				output.push_back(Term(Term::to_value(str_value)));
-				output.push_back(Term(ch));
-				str_value.clear();
-				break;
-			}
-		case 2:
-			if (ch == 40)
-			{
-				status = 0;
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 3;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = 12;
-				str_value.push_back(ch);
-				break;
-			}
-		case 3:
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 3;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 46)
-			{
-				status = 6;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 41)
-			{
-				status = 4;
-				output.push_back(Term(Term::to_value(str_value)));
-				str_value.clear();
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = 2;
-				output.push_back(Term(Term::to_value(str_value)));
-				output.push_back(Term(ch));
-				str_value.clear();
-				break;
-			}
-		case 4:
-			if (ch == 41)
-			{
-				status = 4;
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = 2;
-				output.push_back(Term(ch));
-				break;
-			}
-		case 6:
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 6;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 41)
-			{
-				status = 4;
-				output.push_back(Term(Term::to_value(str_value)));
-				str_value.clear();
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = 2;
-				output.push_back(Term(Term::to_value(str_value)));
-				str_value.clear();
-				output.push_back(Term(ch));
-				break;
-			}
-		case 7:
-			if (ch == 40)
-			{
-				status = 7;
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 1;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = 10;
-				str_value.push_back(ch);
-				break;
-			}
-		case 8:
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = 8;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 61)
-			{
-				output.push_back(Term(str_value));
-				str_value.clear();
-				output.push_back(Term(ch));
-				status = 9;
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				output.push_back(Term(str_value));
-				str_value.clear();
-				output.push_back(Term(ch));
-				status = 11;
-				break;
-			}
-		case 9:
-			if (ch == 40)
-			{
-				status = 9;
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = 10;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 1;
-				str_value.push_back(ch);
-				break;
-			}
-		case 10:
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = 10;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				output.push_back(Term(str_value));
-				str_value.clear();
-				output.push_back(Term(ch));
-				status = 11;
-				break;
-			}
-		case 11:
-			if (ch == 40)
-			{
-				status = 9;
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = 12;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = 3;
-				str_value.push_back(ch);
-				break;
-			}
-		case 12:
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = 12;
-				str_value.push_back(ch);
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = 2;
-				output.push_back(Term(str_value));
-				str_value.clear();
-				output.push_back(Term(ch));
-				break;
-			}
-			if (ch == 41)
-			{
-				status = 4;
-				output.push_back(Term(str_value));
-				str_value.clear();
-				output.push_back(Term(ch));
-				break;
-			}
+string Term::get_value() {
+	return value;
+}
+
+Polynom Term::get_polynom() {
+	return polynom_value;
+}
+
+void Parser::lvalue_analysis(string lvalue) {
+	if (!(isalpha(lvalue[0]) || lvalue[0] == '_')) {		//	Checks first symbol
+		throw exception("Syntax error: invalid variable name.");
+
+	}
+	if (lvalue == string("delete")) {
+		throw exception("Syntax error: cannot use keyword \"delete\" as a variable name.");
+	}
+	if (lvalue == string("help")) {
+		throw exception("Syntax error: cannot use keyword \"help\" as a variable name.");
+	}
+	if (tolower(lvalue[0]) == 'x' || tolower(lvalue[0]) == 'y' || tolower(lvalue[0]) == 'z') {
+		throw exception("Variable error: variable name cannot start with \'x\', \'y\' or \'z\'. Use \'_\' instead.");
+	}
+	for (char c : lvalue) {		//	Checks other symbols
+		if (!(isalpha(c) || isdigit(c) || c == '_')) {
+			throw exception("Syntax error: invalid variable name.");
 		}
 	}
-	if (str_value.empty() != true)
-	{
-		if (str.back() >= 48 && str.back() <= 57)
-		{
-			output.push_back(Term(Term::to_value(str_value)));
-			str_value.clear();
-		}
-		if (str.back() >= 97 && str.back() <= 122 || str.back() >= 65 && str.back() <= 90)
-		{
-			output.push_back(Term(str_value));
-			str_value.clear();
-		}
-		
+}
+
+void Parser::syntax_analysis(string expr) {
+	if (expr.empty()) {
+		throw exception("Syntax error: expression cannot be empty.");
 	}
-	return output;
-}
-void Parser::del_ch(std::string& input, Stack<std::vector, int>& S, int& status,int& parenthesis_counter)
-{
-	if (input.back() == 40)
-		parenthesis_counter--;
-	if (input.back() == 41)
-		parenthesis_counter++;
-	Interface::delete_ch();
-	S.pop();
-	input.pop_back();
-	status = S.top();
-}
-int Parser::add_ch(std::string& input, Stack<std::vector, int>& S,int st,char& ch)
-{
-	S.push(st);
-	Interface::print_ch(ch);
-	input.push_back(ch);
-	return st;
-}
-char Parser::synt_analis_fsm(int& parenthesis_counter,std::string& input, Stack<std::vector, int>& S,int status)	
-{
-	char ch = _getch();
-	S.push(0);
-	while ((ch != 13 || parenthesis_counter != 0 || status == 2 ||status==11 || status ==13 || status ==5 ) && ch != 3)
-	{
-		switch (status)
-		{
-		case 0:
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input, S, 8, ch);
-				break;
+	int state = STATE_INIT;
+	int bracket_counter = 0;
+	for (char c : expr) {
+		switch (state) {
+		case STATE_INIT:
+			if (c == '(') {
+				bracket_counter++;
 			}
-			if ((ch >= 48 && ch <= 57))
-			{
-				status = add_ch(input, S, 1, ch);
-				break;
+			else if (isdigit(c)) {							//is a number
+				state = STATE_NUM_INT;
 			}
-
-			if (ch == 40)
-			{
-				status = add_ch(input, S, 7, ch);
-				parenthesis_counter++;
-				break;
-			}
-			if (ch == 8)
-			{
-				if (input.size() == 0) break;
-				if (S.size() == 1 && S.top() == 0)
-				{
-					Interface::delete_ch();
-					input.pop_back();
-					break;
+			else if (isalpha(c) || c == '_') {
+				if (c == 'x' || c == 'X') {
+					state = STATE_X_AWAIT_POW_SIGN;
 				}
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 1:
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = add_ch(input,S,2,ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			if (ch == 46)
-			{
-				status = add_ch(input, S, 6, ch);
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = add_ch(input, S, 1, ch);
-				break;
-			}
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 2:
-			if (ch == 40)
-			{
-				status = add_ch(input, S, 0, ch);
-				parenthesis_counter++;
-				break;
-			}
-			if ((ch >= 48 && ch <= 57))
-			{
-				status = add_ch(input, S, 3, ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input,S,status,parenthesis_counter);
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input, S, 12, ch);
-				break;
-			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
-			}
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 3:
-			if (ch == 41)
-			{
-				parenthesis_counter--;
-				if (parenthesis_counter < 0)
-				{
-					Interface::print_red_ch(ch);
-					status = 5;
-					break;
+				else if (c == 'y' || c == 'Y') {
+					state = STATE_Y_AWAIT_POW_SIGN;
 				}
-				status = add_ch(input, S, 4, ch);
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = add_ch(input, S, 2, ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			if (ch == 46)
-			{
-				status = add_ch(input, S, 6, ch);
-				break;
-			}
-
-			if (ch == 13)
-			{
-				status = 13;
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = add_ch(input, S, 3, ch);
-				break;
-			}
-			
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 4:
-			if (ch == 41)
-			{
-				status = add_ch(input,S,4,ch);
-				parenthesis_counter--;
-				if (parenthesis_counter < 0)
-				{
-					Interface::print_red_ch(ch);
-					parenthesis_counter++;
-					status = 5;
-					break;
+				else if (c == 'z' || c == 'Z') {
+					state = STATE_Z_AWAIT_POW_SIGN;
 				}
-				break;
+				else {
+					state = STATE_VAR;
+				}
 			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
+			else {
+				state = STATE_ERROR;
 			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = add_ch(input, S, 2, ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 5:
-			if (ch == 8)
-			{
-				status = S.top();
-				Interface::delete_ch();
-				break;
-			}
-			status = 5;
 			break;
-		case 6:
-			if (ch >= 48 && ch <= 57)
-			{
-				status = add_ch(input, S, 6, ch);
-				break;
-			}
-			if (ch == 41)
-			{
-				parenthesis_counter--;
-				if (parenthesis_counter < 0)
-				{
-					Interface::print_red_ch(ch);
-					status = 5;
-					break;
+		case STATE_OPERATOR:
+			if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
 				}
-				status = add_ch(input, S, 4, ch);
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = add_ch(input, S, 2, ch);
-				break;
-			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 7:
-			if (ch == 40)
-			{
-				status = add_ch(input, S, 7, ch);
-				parenthesis_counter++;
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = add_ch(input, S, 1, ch);
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input, S, 10, ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
-			}
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 8:
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input,S,8,ch);
-				break;
-			}
-			if (ch == 61)
-			{
-				status = add_ch(input, S, 9, ch);
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = add_ch(input, S, 11, ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 9:
-			if (ch == 40)
-			{
-				status = add_ch(input, S, 9, ch);
-				parenthesis_counter++;
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input, S, 10, ch);
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = add_ch(input,S,1,ch);
-				break;
-			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 10:
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input, S, 10, ch);
-				break;
-			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = add_ch(input, S, 11, ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
-			}
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 11:
-			if (ch == 40)
-			{
-				status = add_ch(input, S, 9, ch);
-				parenthesis_counter++;
-				break;
-			}
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input, S, 12, ch);
-				break;
-			}
-			if (ch >= 48 && ch <= 57)
-			{
-				status = add_ch(input, S, 3, ch);
-				break;
-			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
-			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
-			}
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
-			}
-		case 12:
-			if (ch >= 97 && ch <= 122 || ch >= 65 && ch <= 90)
-			{
-				status = add_ch(input, S, 12, ch);
-				break;
-			}
-			if (ch == 41)
-			{
-				parenthesis_counter--;
-				if (parenthesis_counter < 0)
-				{
-					Interface::print_red_ch(ch);
-					status = 5;
-					break;
+				else {
+					state = STATE_OPERATOR;
 				}
-				status = add_ch(input, S, 4, ch);
-				break;
 			}
-			if (ch == 43 || ch == 42 || ch == 45 || ch == 47)
-			{
-				status = add_ch(input, S, 2, ch);
-				break;
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
 			}
-			if (ch == 8)
-			{
-				del_ch(input, S, status, parenthesis_counter);
-				break;
+			else {
+				state = STATE_ERROR;
 			}
-			if (ch == 13)
-			{
-				status = 13;
-				break;
+			break;
+		case STATE_NUM_DOUBLE:
+			if (isdigit(c)) {
+				state = STATE_NUM_DOUBLE;
 			}
-			else
-			{
-				Interface::print_red_ch(ch);
-				status = 5;
-				break;
+			else if (c == 'x' || c == 'X') {
+				state = STATE_X_AWAIT_POW_SIGN;
 			}
-		case 13:
-			if (ch != 13)
-			{
-				status = S.top();
-				break;
+			else if (c == 'y' || c == 'Y') {
+				state = STATE_Y_AWAIT_POW_SIGN;
 			}
-			Interface::print_red_ch(63);
-			status = 5;
+			else if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_VAR:
+			if (isalpha(c) || c == '_' || isdigit(c)) {
+				state = STATE_VAR;
+			}
+			else if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_NUM_INT:
+			if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else if (isdigit(c)) {
+				state = STATE_NUM_INT;
+			}
+			else if (c == '.') {
+				state = STATE_NUM_DOUBLE;
+			}
+			else if (c == 'x' || c == 'X') {
+				state = STATE_X_AWAIT_POW_SIGN;
+			}
+			else if (c == 'y' || c == 'Y') {
+				state = STATE_Y_AWAIT_POW_SIGN;
+			}
+			else if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_X_AWAIT_POW_SIGN:
+			if (c == '^') {
+				state = STATE_X_POW;
+			}
+			else if (c == 'y' || c == 'Y') {
+				state = STATE_Y_AWAIT_POW_SIGN;
+			}
+			else if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_X_POW:
+			if (isdigit(c)) {
+				state = STATE_X_AFTER_POW;
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_X_AFTER_POW :
+			if (c == 'y' || c == 'Y') {
+				state = STATE_Y_AWAIT_POW_SIGN;
+			}
+			else if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_Y_AWAIT_POW_SIGN:
+			if (c == '^') {
+				state = STATE_Y_POW;
+			}
+			else if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_Y_POW:
+			if (isdigit(c)) {
+				state = STATE_Y_AFTER_POW;
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_Y_AFTER_POW:
+			if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_Z_AWAIT_POW_SIGN:
+			if (c == '^') {
+				state = STATE_Z_POW;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_Z_POW:
+			if (isdigit(c)) {
+				state = STATE_OPERATOR;
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_Z_AFTER_POW:
+			if (c == ')') {
+				bracket_counter--;
+				if (bracket_counter < 0) {
+					state = STATE_ERROR;
+				}
+				else {
+					state = STATE_OPERATOR;
+				}
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/') {
+				state = STATE_INIT;
+			}
+			else {
+				state = STATE_ERROR;
+			}
+			break;
+		case STATE_ERROR:
+			throw exception("Syntax error: invalid expression.");
+		}
+
+	}
+	if (bracket_counter) {
+		state = STATE_ERROR;
+	}
+	if (state == STATE_INIT || state == STATE_X_POW || state == STATE_Y_POW || state == STATE_Z_POW) {
+		state = STATE_ERROR;
+	}
+	if (state == STATE_ERROR) {
+		throw exception("Syntax error: invalid expression.");
+	}
+}
+
+vector<Term> Parser::get_terms(string expr) {
+	int state = STATE_INIT;
+	vector<Term> terms;
+	string term;
+
+	double coef = 0;
+	int x_pow = 0, y_pow = 0, z_pow = 0;
+
+	for (char c : expr) {
+		switch (state) {
+		case STATE_INIT:
+			if (c == '(') {
+				terms.push_back(Term(c));
+			}
+			else if (isdigit(c)) {		//is a number
+				term.push_back(c);
+				state = STATE_NUM_INT;
+			}
+			else if (isalpha(c) || c == '_') {
+				if (c == 'x' || c == 'X') {
+					term.push_back('1');
+					coef = 1;
+					state = STATE_X_AWAIT_POW_SIGN;
+				}
+				else if (c == 'y' || c == 'Y') {
+					term.push_back('1');
+					coef = 1;
+					state = STATE_Y_AWAIT_POW_SIGN;
+				}
+				else if (c == 'z' || c == 'Z') {
+					term.push_back('1');
+					coef = 1;
+					state = STATE_Z_AWAIT_POW_SIGN;
+				}
+				else {
+					term.push_back(c);
+					state = STATE_VAR;
+				}
+			}
+			break;
+		case STATE_OPERATOR:
+			if (c == ')') {
+				if (!term.empty())
+					terms.push_back(Term(term));
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty())
+					terms.push_back(Term(term));
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			break;
+		case STATE_NUM_DOUBLE:
+			if (isdigit(c)) {
+				term.push_back(c);
+				state = STATE_NUM_DOUBLE;
+			}
+			else if (c == 'x' || c == 'X') {
+				coef = stod(term);
+				state = STATE_X_AWAIT_POW_SIGN;
+			}
+			else if (c == 'y' || c == 'Y') {
+				coef = stod(term);
+				state = STATE_Y_AWAIT_POW_SIGN;
+			}
+			else if (c == 'z' || c == 'Z') {
+				coef = stod(term);
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == ')') {
+				if (!term.empty()) {
+					coef = stod(term);
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty()) {
+					coef = stod(term);
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			break;
+		case STATE_VAR:
+			if (isalpha(c) || c == '_' || isdigit(c)) {
+				term.push_back(c);
+				state = STATE_VAR;
+			}
+			else if (c == ')') {
+				if (!term.empty())
+					terms.push_back(Term(term));
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty())
+					terms.push_back(Term(term));
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			break;
+		case STATE_NUM_INT:
+			if (c == ')') {
+				if (!term.empty()) {
+					coef = stod(term);
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			else if (c == 'x' || c == 'X') {
+				coef = stod(term);
+				state = STATE_X_AWAIT_POW_SIGN;
+			}
+			else if (c == 'y' || c == 'Y') {
+				coef = stod(term);
+				state = STATE_Y_AWAIT_POW_SIGN;
+			}
+			else if (c == 'z' || c == 'Z') {
+				coef = stod(term);
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty()) {
+					coef = stod(term);
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			else if (isdigit(c)) {
+				term.push_back(c);
+				state = STATE_NUM_INT;
+			}
+			else if (c == '.') {
+				term.push_back(c);
+				state = STATE_NUM_DOUBLE;
+			}
+			break;
+		case STATE_X_AWAIT_POW_SIGN:
+			if (c == '^') {
+				state = STATE_X_POW;
+			}
+			else if (c == 'y' || c == 'Y') {
+				x_pow = 1;
+				state = STATE_Y_AWAIT_POW_SIGN;
+			}
+			else if (c == 'z' || c == 'Z') {
+				x_pow = 1;
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty()) {
+					x_pow = 1;
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				if (!term.empty()) {
+					x_pow = 1;
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			break;
+		case STATE_X_POW:
+			x_pow = c - '0';
+			state = STATE_X_AFTER_POW;
+			break;
+		case STATE_X_AFTER_POW:
+			if (c == 'y' || c == 'Y') {
+				state = STATE_Y_AWAIT_POW_SIGN;
+			}
+			else if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty()) {
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				if (!term.empty()) {
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			break;
+		case STATE_Y_AWAIT_POW_SIGN:
+			if (c == '^') {
+				state = STATE_Y_POW;
+			}
+			else if (c == 'z' || c == 'Z') {
+				y_pow = 1;
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty()) {
+					y_pow = 1;
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+					y_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				if (!term.empty()) {
+					y_pow = 1;
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+					y_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			break;
+		case STATE_Y_POW:
+			y_pow = c - '0';
+			state = STATE_Y_AFTER_POW;
+			break;
+		case STATE_Y_AFTER_POW:
+			if (c == 'z' || c == 'Z') {
+				state = STATE_Z_AWAIT_POW_SIGN;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty()) {
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+					y_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				if (!term.empty()) {
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+					y_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			break;
+		case STATE_Z_AWAIT_POW_SIGN:
+			if (c == '^') {
+				state = STATE_Z_POW;
+			}
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				if (!term.empty()) {
+					z_pow = 1;
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+					y_pow = 0;
+					z_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			else if (c == ')') {
+				if (!term.empty()) {
+					z_pow = 1;
+					Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+					terms.push_back(Term(p));
+					coef = 0;
+					x_pow = 0;
+					y_pow = 0;
+					z_pow = 0;
+				}
+				term.clear();
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
+			}
+			break;
+		case STATE_Z_POW:
+		{
+			z_pow = c - '0';
+			Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+			terms.push_back(Term(p));
+			coef = 0;
+			x_pow = 0;
+			y_pow = 0;
+			z_pow = 0;
+			term.clear();
+			state = STATE_Z_AFTER_POW;
 			break;
 		}
-		ch = _getch();
-	}
-	return ch;
-}
-std::string Parser::synt_analis()
-{
-	int parenthesis_counter;
-	std::string input;
-	do
-	{
-		parenthesis_counter = 0;
-		input.clear();
-		Stack<std::vector, int> S(std::vector<int> {});
-		int status = 0;
-		char ch = synt_analis_fsm(parenthesis_counter, input, S, status);
-		if (ch == 3)
-		{
-			input.clear();
-		}
-		std::cout << std::endl;
-		if (parenthesis_counter != 0)
-		{
-			std::cout << "Check the number of parentthesis" << std::endl;
-			std::cout << "Click ENTER to rewrite expression";
-			while (_getch() != 13)
-			{
-				continue;
+		case STATE_Z_AFTER_POW:
+			if (c == ')') {
+				terms.push_back(Term(c));
+				state = STATE_OPERATOR;
 			}
-			Interface::clear_console();
+			else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
+				terms.push_back(Term(c));
+				state = STATE_INIT;
+			}
+			break;
 		}
-	} while (parenthesis_counter != 0);
-	
-	return input;
+	}
+	if (!term.empty()) {
+		if (state == STATE_NUM_DOUBLE || state == STATE_NUM_INT) {
+			coef = stod(term);
+			Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+			terms.push_back(Term(p));
+		}
+		else if (state == STATE_X_AWAIT_POW_SIGN) {
+			x_pow = 1;
+			Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+			terms.push_back(Term(p));
+		}
+		else if (state == STATE_Y_AWAIT_POW_SIGN) {
+			y_pow = 1;
+			Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+			terms.push_back(Term(p));
+		}
+		else if (state == STATE_Z_AWAIT_POW_SIGN) {
+			z_pow = 1;
+			Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+			terms.push_back(Term(p));
+		}
+		else if (state == STATE_X_AFTER_POW || state == STATE_Y_AFTER_POW || state == STATE_Z_AFTER_POW) {
+			Polynom p(Monom(coef, x_pow, y_pow, z_pow));
+			terms.push_back(Term(p));
+		}
+		else {
+			terms.push_back(Term(term));
+		}
+	}
+	return terms;
 }
-

@@ -25,21 +25,17 @@ int Monom::compare(const Monom& first, const Monom& second) {
 	return 0;
 }
 
-double Monom::get_coef() {
-	return coef;
-}
-
 Monom::Monom() {}
 
 Monom::Monom(double coef, int powX, int powY, int powZ) {
 	if (powX < 0 || powX > 9) {
-		throw std::exception("invalid x power value");
+		throw "invalid x power value";
 	}
 	if (powY < 0 || powY > 9) {
-		throw std::exception("invalid y power value");
+		throw "invalid y power value";
 	}
 	if (powZ < 0 || powZ > 9) {
-		throw std::exception("invalid z power value");
+		throw "invalid z power value";
 	}
 	this->coef = coef;
 	this->powX = powX;
@@ -50,7 +46,7 @@ Monom::Monom(double coef, int powX, int powY, int powZ) {
 Monom Monom::operator+(const Monom& other) {
 	Monom res = *this;
 	if (compare(*this, other)) {
-		throw std::exception("invalid operation");
+		throw "invalid operation";
 	}
 	else res.coef += other.coef;
 	return res;
@@ -59,7 +55,7 @@ Monom Monom::operator+(const Monom& other) {
 Monom Monom::operator-(const Monom& other) {
 	Monom res = *this;
 	if (compare(*this, other)) {
-		throw std::exception("invalid operation");
+		throw "invalid operation";
 	}
 	else res.coef -= other.coef;
 	return res;
@@ -70,15 +66,15 @@ Monom Monom::operator*(const Monom& other) {
 	res.coef *= other.coef;
 	res.powX += other.powX;
 	if (res.powX < 0 || res.powX > 9) {
-		throw std::exception("x power overflow");
+		throw "x power overflow";
 	}
 	res.powY += other.powY;
 	if (res.powY < 0 || res.powY > 9) {
-		throw std::exception("y power overflow");
+		throw "y power overflow";
 	}
 	res.powZ += other.powZ;
 	if (res.powZ < 0 || res.powZ > 9) {
-		throw std::exception("z power overflow");
+		throw "z power overflow";
 	}
 	return res;
 }
@@ -94,15 +90,15 @@ Monom Monom::operator/(const Monom& other) {
 	res.coef /= other.coef;
 	res.powX -= other.powX;
 	if (res.powX < 0 || res.powX > 9) {
-		throw std::exception("x power overflow");
+		throw "x power overflow";
 	}
 	res.powY -= other.powY;
 	if (res.powY < 0 || res.powY > 9) {
-		throw std::exception("y power overflow");
+		throw "y power overflow";
 	}
 	res.powZ -= other.powZ;
 	if (res.powZ < 0 || res.powZ > 9) {
-		throw std::exception("z power overflow");
+		throw "z power overflow";
 	}
 	return res;
 }
@@ -125,31 +121,7 @@ bool Monom::operator!=(const Monom& other) {
 }
 
 std::ostream& operator<<(std::ostream& ostr, const Monom& m) {
-	if (!(m.coef == 1 && (m.powX || m.powY || m.powZ))) {
-		if (m.coef == -1) {
-			ostr << "-";
-		}
-		else {
-			ostr << m.coef;
-		}
-	}
-	if (m.coef) {
-		if (m.powX) {
-			ostr << "x";
-			if (m.powX != 1)
-				ostr << "^" << m.powX;
-		}
-		if (m.powY) {
-			ostr << "y";
-			if (m.powY != 1)
-				ostr << "^" << m.powY;
-		}
-		if (m.powZ) {
-			ostr << "z";
-			if (m.powZ != 1)
-				ostr << "^" << m.powZ;
-		}
-	}
+	ostr << m.coef << "x^" << m.powX << "y^" << m.powY << "z^" << m.powZ;
 	return ostr;
 }
 

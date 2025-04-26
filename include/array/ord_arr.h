@@ -63,7 +63,7 @@ public:
 					break;
 				}
 				else if (elem.first == data[i].first) {
-					throw "Cannot overwrite existing key, must delete it first.";
+					throw std::exception("Cannot overwrite existing key, must delete it first.");
 				}
 			}
 			return Iterator(&data[insert_index]);
@@ -91,7 +91,7 @@ public:
 	Iterator find(const TKey& key) {
 		size_t lower = 0;
 		size_t upper = data.size();
-		size_t curr = (upper + 1) / 2;
+		size_t curr = upper / 2;
 		while (lower != upper) {
 			if (data[curr].first == key) {
 				return Iterator(&data[curr]);
@@ -101,7 +101,7 @@ public:
 				curr -= (upper - lower + 1) / 2;
 			}
 			else {
-				lower = curr + 1;
+				lower = curr;
 				curr += (upper - lower + 1) / 2;
 			}
 		}
@@ -114,7 +114,7 @@ public:
 
 	TValue& operator[](const TKey& key) {
 		auto it = find(key);
-		if (it == end()) throw "Index overflow.";
+		if (it == end()) throw std::exception("Index overflow.");
 		return it.value();
 	}
 

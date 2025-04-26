@@ -1,7 +1,26 @@
 #include <gtest.h>
 #include "bs_tree.h"
-#include "avl_tree.h"
 #include "polinom.h"
+#include <numeric>
+#include <algorithm>
+#include <random>
+#include <chrono>
+
+//	Iterator tests
+
+TEST(BSTreeIterator, CanCreateIterators) {
+	BSTree<std::string, Polynom> table;
+	EXPECT_NO_THROW(table.begin());
+	EXPECT_NO_THROW(table.root());
+	EXPECT_NO_THROW(table.end());
+}
+
+TEST(BSTreeIterator, CanIterateThroughTableUsingIterator) {
+	BSTree<std::string, Polynom> table;
+	ASSERT_NO_THROW(for (auto i = table.begin(); i != table.end(); ++i));
+}
+
+//	Binary search tree tests	
 
 TEST(BinarySearchTree, CanInsert) {
 	BSTree<std::string, Polynom> t;
@@ -16,7 +35,7 @@ TEST(BinarySearchTree, CanInsert) {
 	t.insert("e", p5);
 	t.insert("d", p4);
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -47,7 +66,7 @@ TEST(BinarySearchTree, CanEraseLeaf) {
 	t.erase("b");
 	auto keys = t.print_keys();
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	std::string keys_str;
@@ -67,7 +86,7 @@ TEST(BinarySearchTree, CanEraseSubrootWithOneChild) {
 	t.insert("b", p2);
 	t.erase("a");
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -88,7 +107,7 @@ TEST(BinarySearchTree, CanEraseRoot) {
 	t.insert("b", p2);
 	t.erase("c");
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -99,7 +118,7 @@ TEST(BinarySearchTree, CanEraseRoot) {
 
 TEST(BinarySearchTree, ErasingNonExistingNodeReturnsNullIterator) {
 	BSTree<std::string, Polynom> t;
-	ASSERT_EQ(t.erase("c"), t.null());
+	ASSERT_EQ(t.erase("c"), t.end());
 }
 
 TEST(BinarySearchTree, CanFind) {
@@ -124,102 +143,53 @@ TEST(BinarySearchTree, CanFind) {
 
 TEST(BinarySearchTree, FindingNonExistingNodeReturnsNullIterator) {
 	BSTree<std::string, Polynom> t;
-	ASSERT_EQ(t.find("c"), t.null());
+	ASSERT_EQ(t.find("c"), t.end());
 }
 
-TEST(AVLTree, CanInsert) {
-	AVLTree<std::string, Polynom> t;
-	Polynom p1(Monom(1, 1, 1, 1));
-	Polynom p2(Monom(2, 1, 1, 1));
-	Polynom p3(Monom(3, 1, 1, 1));
-	Polynom p4(Monom(4, 1, 1, 1));
-	Polynom p5(Monom(5, 1, 1, 1));
-	t.insert("c", p3);
-	t.insert("a", p1);
-	t.insert("b", p2);
-	t.insert("e", p5);
-	t.insert("d", p4);
+TEST(BinarySearchTree, StressTestInsertHundredThousand) {
+	BSTree<int, Polynom> t;
+	Polynom p(Monom(1, 1, 1, 1));
+	std::vector<int> keys(100000);
+	std::iota(keys.begin(), keys.end(), 1);
+	std::shuffle(keys.begin(), keys.end(), std::mt19937{ std::random_device{}() });
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
-		std::cout << i.key();
+	auto start = std::chrono::high_resolution_clock::now();
+	for (int key : keys) {
+		t.insert(key, p);
 	}
-
-	auto keys = t.print_keys();
-	std::string keys_str;
-	for (const auto& s : keys) keys_str += s;
-	EXPECT_EQ(keys_str, "abcde");
-	EXPECT_TRUE(t.is_balanced());
+	auto fin = std::chrono::high_resolution_clock::now();
+	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
+	ASSERT_NE(t.begin(), t.end());
 }
 
-TEST(AVLTree, CanEraseLeaf) {
-	AVLTree<std::string, Polynom> t;
-	Polynom p1(Monom(1, 1, 1, 1));
-	Polynom p2(Monom(2, 1, 1, 1));
-	Polynom p3(Monom(3, 1, 1, 1));
-	Polynom p4(Monom(4, 1, 1, 1));
-	Polynom p5(Monom(5, 1, 1, 1));
-	t.insert("c", p3);
-	t.insert("a", p1);
-	t.insert("b", p2);
-	EXPECT_TRUE(t.is_balanced());
+TEST(BinarySearchTree, StressTestInsertMillion) {
+	BSTree<int, Polynom> t;
+	Polynom p(Monom(1, 1, 1, 1));
+	std::vector<int> keys(1000000);
+	std::iota(keys.begin(), keys.end(), 1);
+	std::shuffle(keys.begin(), keys.end(), std::mt19937{ std::random_device{}() });
 
-	t.erase("b");
-
-	for (auto i = t.begin(); i != t.null(); ++i) {
-		std::cout << i.key();
+	auto start = std::chrono::high_resolution_clock::now();
+	for (int key : keys) {
+		t.insert(key, p);
 	}
-	auto keys = t.print_keys();
-	std::string keys_str;
-	for (const auto& s : keys) keys_str += s;
-	ASSERT_EQ(keys_str, "ac");
+	auto fin = std::chrono::high_resolution_clock::now();
+	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
+	ASSERT_NE(t.begin(), t.end());
 }
 
-TEST(AVLTree, CanEraseSubrootWithOneChild) {
-	AVLTree<std::string, Polynom> t;
-	Polynom p1(Monom(1, 1, 1, 1));
-	Polynom p2(Monom(2, 1, 1, 1));
-	Polynom p3(Monom(3, 1, 1, 1));
-	Polynom p4(Monom(4, 1, 1, 1));
-	Polynom p5(Monom(5, 1, 1, 1));
-	t.insert("c", p3);
-	t.insert("a", p1);
-	t.insert("b", p2);
-	t.insert("e", p5);
-	t.insert("d", p4);
-	t.erase("a");
+TEST(BinarySearchTree, StressTestInsertTenMillion) {
+	BSTree<int, Polynom> t;
+	Polynom p(Monom(1, 1, 1, 1));
+	std::vector<int> keys(10000000);
+	std::iota(keys.begin(), keys.end(), 1);
+	std::shuffle(keys.begin(), keys.end(), std::mt19937{ std::random_device{}() });
 
-	EXPECT_TRUE(t.is_balanced());
-
-	for (auto i = t.begin(); i != t.null(); ++i) {
-		std::cout << i.key();
+	auto start = std::chrono::high_resolution_clock::now();
+	for (int key : keys) {
+		t.insert(key, p);
 	}
-	auto keys = t.print_keys();
-	std::string keys_str;
-	for (const auto& s : keys) keys_str += s;
-	ASSERT_EQ(keys_str, "bcde");
-}
-
-TEST(AVLTree, CanEraseRoot) {
-	AVLTree<std::string, Polynom> t;
-	Polynom p1(Monom(1, 1, 1, 1));
-	Polynom p2(Monom(2, 1, 1, 1));
-	Polynom p3(Monom(3, 1, 1, 1));
-	Polynom p4(Monom(4, 1, 1, 1));
-	Polynom p5(Monom(5, 1, 1, 1));
-	t.insert("c", p3);
-	t.insert("a", p1);
-	t.insert("b", p2);
-	t.insert("e", p5);
-	t.insert("d", p4);
-	t.erase("c");
-
-	EXPECT_TRUE(t.is_balanced());
-
-	for (auto i = t.begin(); i != t.null(); ++i) {
-		std::cout << i.key();
-	}
-	auto keys = t.print_keys();
-	std::string keys_str;
-	for (const auto& s : keys) keys_str += s;
-	ASSERT_EQ(keys_str, "abde");
+	auto fin = std::chrono::high_resolution_clock::now();
+	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
+	ASSERT_NE(t.begin(), t.end());
 }

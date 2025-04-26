@@ -1,6 +1,3 @@
-#ifndef LIST_H
-#define LIST_H
-
 #include <iostream>
 
 /*template <class T>
@@ -125,25 +122,14 @@ public:
 	Iterator end() const { return Iterator(nullptr); }
 
 	void print() {
-		if (sz == 1 && !first->val.get_coef()) {
-			std::cout << "0";
-		}
-		else {
-			for (Iterator i = this->begin(); i != this->end(); ++i) {
-				if (i.value().get_coef()) {
-					std::cout << i.value();
-					if (i.next() != this->end()) {
-						if (i.next().value().get_coef() > 0) {
-							std::cout << "+";
-						}
-						else if (i.next().value().get_coef() < 0) {
-							std::cout << "-";
-						}
-					}
-				}
+		std::cout << "(";
+		for (Iterator i = this->begin();  i != this->end(); ++i) {
+			std::cout << i.value();
+			if (i.next() != this->end()) {
+				std::cout << ", ";
 			}
 		}
-		std::cout << std::endl;
+		std::cout << ")" << std::endl;
 	}
 
 	size_t size() const {
@@ -218,5 +204,3 @@ public:
 		return first ? false : true;
 	}
 };
-
-#endif
