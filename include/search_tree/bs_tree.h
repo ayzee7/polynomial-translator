@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 
 template <class TKey, class TValue>
 class BSTree {
@@ -237,7 +238,7 @@ public:
 	}
 	Iterator end() const { return Iterator(nullptr); }
 	Iterator root() { return Iterator(root_node); }
-	Iterator null() { return Iterator(nullptr); }
+	Iterator end() { return Iterator(nullptr); }
 
 	void print() {
 		print(root_node);
