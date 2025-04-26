@@ -2,7 +2,12 @@
 
 template <class TKey, class TValue>
 class BSTree {
-
+public:
+	enum class Color
+	{
+		BLACK,
+		RED
+	};
 protected:
 
 	template<class TKey, class TValue>
@@ -10,35 +15,38 @@ protected:
 
 		TKey key;
 		TValue value;
+		Color color;
 		Node* left, * right, * parent;
 
-		Node(const TKey& key, const TValue& value): key(key), value(value), left(nullptr), right(nullptr), parent(nullptr) {}
+		Node(const TKey& key, const TValue& value) : key(key), value(value), left(nullptr), right(nullptr), parent(nullptr),color(Color::RED) {}
 
 	};
 
 	Node<TKey, TValue>* root_node = nullptr;
 
-	Node<TKey, TValue>* grandparent(Node<TKey, TValue>* curr) {
+
+	Node<TKey, TValue>* grandparent(Node<TKey, TValue>* curr) const {
 		if (curr->parent)
 			return curr->parent->parent;
 		else return nullptr;
 	}
 
-	Node<TKey, TValue>* sibling(Node<TKey, TValue>* curr) {
-		if (!curr->parent)
-			return nullptr;
+	Node<TKey, TValue>* sibling(Node<TKey, TValue>* curr) const{
+		if (!curr || !curr->parent)
+			return nullptr;	
 		else if (curr == curr->parent->left)
 			return curr->parent->right;
 		else return curr->parent->left;
 	}
 
-	Node<TKey, TValue>* uncle(Node<TKey, TValue>* curr) {
+	Node<TKey, TValue>* uncle(Node<TKey, TValue>* curr) const
+	{
 		if (curr->parent)
 			return sibling(curr->parent);
 		else return nullptr;
 	}
 
-	Node<TKey, TValue>* find(const TKey& key, Node<TKey, TValue>* curr) {
+	Node<TKey, TValue>* find(const TKey& key, Node<TKey, TValue>* curr)const {
 		if (!curr) return nullptr;
 		else if (key == curr->key) return curr;
 		else if (key > curr->key) return find(key, curr->right);
@@ -103,7 +111,7 @@ protected:
 		print(curr->right);
 	}
 
-	void print_keys(Node<TKey, TValue>* curr, std::vector<TKey>& keys) {
+	void print_keys(Node<TKey, TValue>* curr, std::vector<TKey>& keys) const{
 		if (!curr) return;
 		print_keys(curr->left, keys);
 		keys.push_back(curr->key);
@@ -223,7 +231,8 @@ public:
 		Node<TKey, TValue>* ptr;
 	};
 
-	Iterator begin() { return Iterator(find(print_keys()[0])); }
+	Iterator begin() const { return Iterator(find(print_keys()[0])); }
+	Iterator end() const { return Iterator(nullptr); }
 	Iterator root() { return Iterator(root_node); }
 	Iterator null() { return Iterator(nullptr); }
 
@@ -231,13 +240,13 @@ public:
 		print(root_node);
 	}
 
-	std::vector<TKey> print_keys() {
+	std::vector<TKey> print_keys() const {
 		std::vector<TKey> keys;
 		print_keys(root_node, keys);
 		return keys;
 	}
 
-	Iterator find(const TKey& key) {
+	Iterator find(const TKey& key) const {
 		return Iterator(find(key, root_node));
 	}
 
