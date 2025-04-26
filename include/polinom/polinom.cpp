@@ -387,6 +387,49 @@ int Polynom::size() const
 {
 	return polynom.size();
 }
+
+bool Polynom::operator<(const Polynom& other) const {
+	auto it1 = this->polynom.begin();
+	auto it2 = other.polynom.begin();
+	auto end1 = this->polynom.end();
+	auto end2 = other.polynom.end();
+
+	while (it1 != end1 && it2 != end2) {
+		int power_comp = Monom::compare(it1->val, it2->val);
+
+		if (power_comp < 0)
+			return true;
+		if (power_comp > 0)
+			return false;
+
+		double coeff1 = it1->val.get_coeff();
+		double coeff2 = it2->val.get_coeff();
+
+		double diff = coeff1 - coeff2;
+
+		if (diff < -1e-5)
+			return true;
+		if (diff > 1e-5)
+			return false;
+
+		++it1;
+		++it2;
+	}
+
+	return (it1 == end1 && it2 != end2);
+}
+bool Polynom::operator>(const Polynom& other) const
+{
+	return !(*this < other) && !(*this == other);
+}
+bool Polynom::operator<=(const Polynom& other) const 
+{
+	return !(other < *this);
+}
+bool Polynom::operator>=(const Polynom& other) const 
+{
+	return !(*this < other);
+}
 std::ostream& operator<<(std::ostream& ostr, const Polynom& m)
 {
 

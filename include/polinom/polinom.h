@@ -85,6 +85,10 @@ public:
 
 	int size() const;
 
+	bool operator<(const Polynom& other) const;
+	bool operator>(const Polynom& other) const;
+	bool operator<=(const Polynom& other) const;
+	bool operator>=(const Polynom& other) const;
 
 	friend std::ostream& operator<<(std::ostream& ostr, const Polynom& m);
 };
