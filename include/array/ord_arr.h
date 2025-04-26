@@ -89,20 +89,18 @@ public:
 	}
 
 	Iterator find(const TKey& key) {
-		size_t lower = 0;
-		size_t upper = data.size();
-		size_t curr = upper / 2;
-		while (lower != upper) {
+		int lower = 0;
+		int upper = data.size() - 1;
+		while (lower <= upper) {
+			size_t curr = lower + (upper - lower) / 2;
 			if (data[curr].first == key) {
 				return Iterator(&data[curr]);
 			}
 			else if (data[curr].first > key) {
-				upper = curr;
-				curr -= (upper - lower + 1) / 2;
+				upper = curr - 1;
 			}
 			else {
-				lower = curr;
-				curr += (upper - lower + 1) / 2;
+				lower = curr + 1;
 			}
 		}
 		return end();

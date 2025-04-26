@@ -53,7 +53,7 @@ public:
         auto elem = std::make_pair(key, value);
 
         auto it_found = find(key);
-        if (it_found != end()) throw 0;
+        if (it_found != end()) throw std::exception("Cannot overwrite existing key, must delete it first.");
         data.emplace_back(elem);
 
         return Iterator(&data[data.size()-1]);;
@@ -101,7 +101,7 @@ public:
     TValue& operator[](const TKey& key) {
         auto it = find(key);
 
-        if (it == end()) throw 0;
+        if (it == end()) throw std::exception("Index overflow.");
 
         return it.value();
     }

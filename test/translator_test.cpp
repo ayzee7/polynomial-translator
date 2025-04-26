@@ -1,8 +1,11 @@
 #include <gtest.h>
 #include "Translator.h"
 #include "ord_arr.h"
+#include "unord_arr.h"
 #include "address_hash.h"
+#include "hash_chain.h"
 #include "avl_tree.h"
+#include "rb_tree.h"
 
 template <class T>
 class TranslatorTest : public ::testing::Test {
@@ -10,7 +13,7 @@ public:
 	using TestType = Translator<T>;
 };
 
-using TestTypes = ::testing::Types<OrderedTable<std::string, Polynom>, AVLTree<std::string, Polynom>, AddressHashTable<std::string, Polynom>>;
+using TestTypes = ::testing::Types<OrderedTable<std::string, Polynom>, UnorderedTable<std::string, Polynom>, AVLTree<std::string, Polynom>, RBTree<std::string, Polynom>, AddressHashTable<std::string, Polynom>, HashTableChaining<std::string, Polynom>>;
 TYPED_TEST_CASE(TranslatorTest, TestTypes);
 
 //	Object-oriented tests

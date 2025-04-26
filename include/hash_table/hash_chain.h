@@ -112,7 +112,7 @@ public:
 
         for (auto it = chain.begin(); it != chain.end(); ++it) {
             if (it->first == key) {
-                throw 0;
+                throw std::exception("Cannot overwrite existing key, must delete it first.");
             }
         }
 
@@ -169,6 +169,6 @@ public:
         Iterator it = find(key);
 
         if (it != end()) return it->second;
-        else throw 0;
+        else throw std::exception("Index overflow.");
     }
 };

@@ -7,7 +7,7 @@
 #include <exception>
 #include <string>
 
-int startup();
+char startup();
 
 std::string await_input();
 

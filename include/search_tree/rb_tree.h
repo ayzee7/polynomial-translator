@@ -319,15 +319,13 @@ public:
         while (current != nullptr)
         {
             parent = current;
-            if (key < current->key)
+            if (key == current->key) {
+                throw std::exception("Cannot overwrite existing key, must delete it first.");
+            }
+            else if (key < current->key)
                 current = current->left;
             else if (key > current->key)
                 current = current->right;
-            else
-            {
-                current->value = value;
-                return Iterator(current);
-            }
         }
 
         Node* newNode = new Node(key, value);
