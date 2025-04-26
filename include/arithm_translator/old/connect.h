@@ -10,5 +10,5 @@ class Connect
 {
 public:
 	static void connection();
-	static void handler(std::map<std::string, double>& values, std::vector<Term>& terms);
+	static void handler(std::map<std::string, Polynom>& values, std::vector<Term>& terms);
 };

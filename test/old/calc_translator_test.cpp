@@ -4,113 +4,145 @@
 
 class calc_test : public ::testing::Test {
 protected:
-    std::vector<Term> post_str;
-    std::vector<double> operands;
+    std::vector<Term::Type> post_str;
+    std::vector<Polynom> operands;
+    std::vector<std::string> operators;
 
-    void addOperator(const char& ch) {
-        Term a(ch);
-        post_str.push_back(a);
+    void addOperator(const std::string& ch) 
+    {
+        post_str.push_back(Term::Type::OPERATOR);
+        operators.push_back(ch);
     }
 
-    void addOperand(double value) {
-        Term a(value);
-        post_str.push_back(a);
+    void addOperand(const Polynom& value) 
+    {
+        post_str.push_back(Term::Type::MONOM);
         operands.push_back(value);
     }
 
-    void SetUp() override {
+    void SetUp() override 
+    {
         post_str.clear();
         operands.clear();
+        operators.clear();
     }
 };
 
-TEST_F(calc_test, simple_addition) 
+
+TEST_F(calc_test, simple_addition)
 {
-    addOperand(3.0);
-    addOperand(5.0);
-    addOperator('+');
+    Monom a(3, 0, 0, 0);
+    Polynom pol1(a);
+    addOperand(pol1);
+    Monom b(2, 1, 1, 1);
+    Polynom pol2(b);
+    addOperand(pol2);
+    addOperator("+");
 
-    EXPECT_DOUBLE_EQ(8.0, Calc::Calculate(post_str, operands));
+    Polynom p = pol1 + pol2;
+    EXPECT_EQ(p, Calc::Calculate(post_str, operands, operators));
 }
-TEST_F(calc_test, simple_substraction) 
+TEST_F(calc_test, simple_substraction)
 {
-    addOperand(3.0);
-    addOperand(5.0);
-    addOperator('-');
+    Monom a(3, 0, 0, 0);
+    Polynom pol1(a);
+    addOperand(pol1);
+    Monom b(2, 1, 1, 1);
+    Polynom pol2(b);
+    addOperand(pol2);
+    addOperator("-");
 
-    EXPECT_DOUBLE_EQ(-2.0, Calc::Calculate(post_str, operands));
+    Polynom p = pol1 - pol2;
+    EXPECT_EQ(p, Calc::Calculate(post_str, operands, operators));
 }
-TEST_F(calc_test, simple_multiplication) 
+TEST_F(calc_test, simple_multiplication)
 {
-    addOperand(3.0);
-    addOperand(5.0);
-    addOperator('*');
+    Monom a(3, 0, 0, 0);
+    Polynom pol1(a);
+    addOperand(pol1);
+    Monom b(2, 1, 1, 1);
+    Polynom pol2(b);
+    addOperand(pol2);
+    addOperator("*");
 
-    EXPECT_DOUBLE_EQ(15.0, Calc::Calculate(post_str, operands));
+    Polynom p = pol1 * pol2;
+    EXPECT_EQ(p, Calc::Calculate(post_str, operands, operators));
 }
-TEST_F(calc_test, simple_division) 
-{   
-    addOperand(3.0);
-    addOperand(5.0);
-    addOperator('/');
-
-    EXPECT_DOUBLE_EQ(0.6, Calc::Calculate(post_str, operands));
-}
-TEST_F(calc_test, can_solve_complex_expression) 
+TEST_F(calc_test, can_solve_complex_expression)
 {
-    addOperand(2.0);
-    addOperand(3.0);
-    addOperator('+');
-    addOperand(4.0);
-    addOperator('*');
+    Monom a(3, 0, 0, 0);
+    Polynom pol1(a);
+    addOperand(pol1);
 
-    EXPECT_DOUBLE_EQ(20.0, Calc::Calculate(post_str, operands));
-}
-TEST_F(calc_test, divison_by_zero)
-{   
-    addOperand(2.0);
-    addOperand(0.0);
-    addOperator('/');
+    Monom b(2, 1, 1, 1);
+    Polynom pol2(b);
+    addOperand(pol2);
 
-    EXPECT_DOUBLE_EQ(INFINITY, Calc::Calculate(post_str, operands));
+    addOperator("+");
+
+    Monom c(4, 2, 2, 2);
+    Polynom pol3(c);
+    addOperand(pol3);
+
+    addOperator("*");
+
+    Polynom p = pol1 + pol2;
+    p = p * pol3;
+    EXPECT_EQ(p, Calc::Calculate(post_str, operands, operators));
 }
-TEST_F(calc_test, can_take_integer_type_addition)
+TEST_F(calc_test, complex_expression_with_multiple_operations)
 {
-    addOperand(2);
-    addOperand(3);
-    addOperator('+');
+    Monom a(3, 0, 0, 0);  
+    Monom b(2, 1, 1, 1);  
+    Monom c(4, 2, 2, 2);  
+    Monom d(1, 0, 1, 0);  
 
-    EXPECT_EQ(5, Calc::Calculate(post_str, operands));
+    Polynom pol1(a);  
+    Polynom pol2(b);  
+    Polynom pol3(c);
+    Polynom pol4(d); 
+
+    addOperand(pol1);
+    addOperand(pol2);
+    addOperator("+");
+
+    addOperand(pol3);
+    addOperator("*");
+
+    addOperand(pol4);
+    addOperator("-");
+
+    Polynom expected = (pol1 + pol2) * pol3 - pol4;
+
+    EXPECT_EQ(expected, Calc::Calculate(post_str, operands, operators));
 }
-TEST_F(calc_test, can_take_integer_type_substraction)
+TEST_F(calc_test, negative_coefficients)
 {
-    addOperand(2);
-    addOperand(3);
-    addOperator('-');
+    Monom a(-3, 1, 0, 0);
+    Polynom pol1(a);
 
-    EXPECT_EQ(-1, Calc::Calculate(post_str, operands));
+    Monom b(-2, 0, 1, 1); 
+    Polynom pol2(b);
+
+    addOperand(pol1);
+    addOperand(pol2);
+    addOperator("+");
+
+    Polynom p = pol1 + pol2;
+    EXPECT_EQ(p, Calc::Calculate(post_str, operands, operators));
 }
-TEST_F(calc_test, can_take_integer_type_multiplication)
+TEST_F(calc_test, polynom_multiplication_by_constant)
 {
-    addOperand(2);
-    addOperand(3);
-    addOperator('*');
+    Monom a(3, 1, 1, 1);  
+    Polynom pol1(a);
 
-    EXPECT_EQ(6, Calc::Calculate(post_str, operands));
-}
-TEST_F(calc_test, can_take_integer_type_division)
-{
-    addOperand(2);
-    addOperand(5);
-    addOperator('/');
+    Monom b(2, 0, 0, 0); 
+    Polynom pol2(b);
 
-    EXPECT_EQ(0.4, Calc::Calculate(post_str, operands));
-}
-TEST_F(calc_test, can_multiply_by_zero)
-{
-    addOperand(2);
-    addOperand(0);
-    addOperator('*');
+    addOperand(pol1);
+    addOperand(pol2);
+    addOperator("*");
 
-    EXPECT_EQ(0, Calc::Calculate(post_str, operands));
+    Polynom p = pol1 * pol2;  
+    EXPECT_EQ(p, Calc::Calculate(post_str, operands, operators));
 }

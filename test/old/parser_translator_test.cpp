@@ -1,7 +1,8 @@
 #include <gtest.h>
 #include "parser.h"
+#include "polinom.h"
 
-class test_term_analis : public::testing::Test
+class test_parser : public::testing::Test
 {
 protected:
 	std::string input;
@@ -12,9 +13,9 @@ protected:
         Term a(ch);
         output.push_back(a);
     }
-    void add_operand(double value)
+    void add_operand(const coef& k)
     {
-        Term a(value);
+        Term a(k);
         output.push_back(a);
     }
     void add_operand(const std::string& variable)
@@ -29,144 +30,158 @@ protected:
 	}
 };
 
-TEST_F(test_term_analis, can_pars_simple_addition)
+TEST_F(test_parser, cant_pars_empty_expression)
 {
-	input = "1+2";
-	
-    add_operand(1);
-    add_operator('+');
-    add_operand(2);
+    input = "";
 
-    EXPECT_EQ(output, Parser::term_analis(input));
+    EXPECT_EQ(output, Parser::pars(input)); 
 }
-TEST_F(test_term_analis, can_pars_simple_substraction)
-{
-    input = "1-2";
 
-    add_operand(1);
+TEST_F(test_parser, can_get_monom)
+{
+    input = "8X^1Y^2Z^3";
+
+    coef k = { 8,1,2,3 };
+    add_operand(k);
+
+    EXPECT_EQ(output, Parser::pars(input));
+}
+TEST_F(test_parser, cant_pars_expression_with_consecutive_operators)
+{
+    input = "8++X";
+
+    EXPECT_EQ(output, Parser::pars(input));  
+}
+
+TEST_F(test_parser, can_pars_monoms_and_operator)
+{
+    input = "8X^1Y^2Z^3+X^2";
+
+    coef k = { 8,1,2,3 };
+    add_operand(k);
+    add_operator('+');
+    k = { 1,2,0,0 };
+    add_operand(k);
+
+    EXPECT_EQ(output, Parser::pars(input));
+}
+TEST_F(test_parser, can_pars_x_monoms_and_operator)
+{
+    input = "8X+X^2";
+
+    coef k = { 8,1,0,0 };
+    add_operand(k);
+    add_operator('+');
+    k = { 1,2,0,0 };
+    add_operand(k);
+
+    EXPECT_EQ(output, Parser::pars(input));
+}
+TEST_F(test_parser, can_pars_y_monoms_and_operator)
+{
+    input = "8Y+Y^2";
+
+    coef k = { 8,0,1,0 };
+    add_operand(k);
+    add_operator('+');
+    k = { 1,0,2,0 };
+    add_operand(k);
+
+    EXPECT_EQ(output, Parser::pars(input));
+}
+TEST_F(test_parser, can_pars_z_monoms_and_operator)
+{
+    input = "8Z+Z^2";
+
+    coef k = { 8,0,0,1 };
+    add_operand(k);
+    add_operator('+');
+    k = { 1,0,0,2 };
+    add_operand(k);
+
+    EXPECT_EQ(output, Parser::pars(input));
+}
+TEST_F(test_parser, can_pars_expression_with_multiple_operators)
+{
+    input = "8X+2Y-3Z";
+
+    coef k = { 8, 1, 0, 0 };
+    add_operand(k);
+    add_operator('+');
+    k = { 2, 0, 1, 0 };
+    add_operand(k);
     add_operator('-');
-    add_operand(2);
+    k = { 3, 0, 0, 1 };
+    add_operand(k);
 
-    EXPECT_EQ(output, Parser::term_analis(input));
+    EXPECT_EQ(output, Parser::pars(input));
 }
-TEST_F(test_term_analis, can_pars_simple_multiplication)
+
+TEST_F(test_parser, can_pars_0_monom)
 {
-    input = "1*27";
+    input = "8";
 
-    add_operand(1);
-    add_operator('*');
-    add_operand(27);
-
-    EXPECT_EQ(output, Parser::term_analis(input));
+    coef k = { 8,0,0,0 };
+    add_operand(k);
+    
+    EXPECT_EQ(output, Parser::pars(input));
 }
-TEST_F(test_term_analis, can_pars_simple_division)
+TEST_F(test_parser, can_pars_0_monoms_with_operator)
 {
-    input = "18/2";
-
-    add_operand(18);
-    add_operator('/');
-    add_operand(2);
-
-    EXPECT_EQ(output, Parser::term_analis(input));
-}
-TEST_F(test_term_analis, can_pars_expression_with_brackets)
-{
-    input = "(1+2)*3";
-
-    add_operator('(');
-    add_operand(1);
+    input = "8+1";
+    coef k = { 8,0,0,0 };
+    add_operand(k);
     add_operator('+');
-    add_operand(2);
-    add_operator(')');
-    add_operator('*');
-    add_operand(3);
+    k = { 1,0,0,0 };
+    add_operand(k);
 
-    EXPECT_EQ(output, Parser::term_analis(input));
+    EXPECT_EQ(output, Parser::pars(input));
 }
-TEST_F(test_term_analis, can_pars_simple_expression_with_variable)
+TEST_F(test_parser, cant_pars_expression_wich_end_with_operator)
 {
-    input = "1+2+a";
-
-    add_operand(1);
-    add_operator('+');
-    add_operand(2);
-    add_operator('+');
-    add_operand("a");
-
-    EXPECT_EQ(output, Parser::term_analis(input));
+    input = "8+";
+    
+    EXPECT_EQ(output, Parser::pars(input));
 }
-TEST_F(test_term_analis, can_pars_expression_with_brackets_and_multi_character_variables)
+TEST_F(test_parser, can_pars_expression_with_operator_eq)
 {
-    input = "MyVar*(1+Sec)";
-
-    add_operand("MyVar");
-    add_operator('*');
-    add_operator('(');
-    add_operand(1);
-    add_operator('+');
-    add_operand("Sec");
-    add_operator(')');
-
-    EXPECT_EQ(output, Parser::term_analis(input));
-}
-TEST_F(test_term_analis, can_pars_expression_with_the_equal_sign)
-{
-    input = "a=3+4";
+    input = "a=8X";
 
     add_operand("a");
     add_operator('=');
-    add_operand(3);
-    add_operator('+');
-    add_operand(4);
+    coef k = { 8,1,0,0 };
+    add_operand(k);
 
-    EXPECT_EQ(output, Parser::term_analis(input));
+    EXPECT_EQ(output, Parser::pars(input));
 }
-TEST_F(test_term_analis, can_pars_expression_with_the_equal_sign_and_few_variables)
+TEST_F(test_parser, cant_pars_expression_wich_ends_with_eq)
 {
-    input = "c=a+b";
+    input = "a=";
 
-    add_operand("c");
-    add_operator('=');
-    add_operand("a");
-    add_operator('+');
-    add_operand("b");
-
-    EXPECT_EQ(output, Parser::term_analis(input));
+    EXPECT_EQ(output, Parser::pars(input));
 }
-TEST_F(test_term_analis, can_pars_expression_with_the_equal_sign_and_brackets)
+TEST_F(test_parser, cant_pars_expression_with_value)
 {
-    input = "a=(3+1)*b";
+    input = "a=a+2";
 
     add_operand("a");
     add_operator('=');
-    add_operator('(');
-    add_operand(3);
+    add_operand("a");
     add_operator('+');
-    add_operand(1);
-    add_operator(')');
-    add_operator('*');
-    add_operand("b");
+    coef k = { 2,0,0,0 };
+    add_operand(k);
 
-    EXPECT_EQ(output, Parser::term_analis(input));
+    EXPECT_EQ(output, Parser::pars(input));
 }
-
-TEST_F(test_term_analis, can_pars_constant_pi)
+TEST_F(test_parser, can_pars_expression_with_fractional_coefficients)
 {
-    input = "pi+PI+Pi";
+    input = "0.5X^2+0.2Y";
 
-    add_operand(3.14159265359);
+    coef k = { 0.5, 2, 0, 0 };
+    add_operand(k);
     add_operator('+');
-    add_operand(3.14159265359);
-    add_operator('+');
-    add_operand(3.14159265359);
+    k = { 0.2, 0, 1, 0 };
+    add_operand(k);
 
-    EXPECT_EQ(output, Parser::term_analis(input));
-}
-TEST_F(test_term_analis, can_pars_constant_e)
-{
-    input = "e";
-
-    add_operand(2.71828182846);
-
-    EXPECT_EQ(output, Parser::term_analis(input));
+    EXPECT_EQ(output, Parser::pars(input));
 }
