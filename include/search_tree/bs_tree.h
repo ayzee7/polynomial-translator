@@ -48,7 +48,7 @@ protected:
 
 	Node<TKey, TValue>* insert(const TKey& key, const TValue& value, Node<TKey, TValue>* curr) {
 		if (!curr) return new Node<TKey, TValue>(key, value);
-		else if (key == curr->key) throw "Cannot overwrite existing key, must delete it first.";
+		else if (key == curr->key) throw std::exception("Cannot overwrite existing key, must delete it first.");
 		else if (key < curr->key) {
 			curr->left = insert(key, value, curr->left);
 			curr->left->parent = curr;
@@ -229,7 +229,7 @@ public:
 		return Iterator(find(print_keys()[0])); 
 	}
 	Iterator root() { return Iterator(root_node); }
-	Iterator null() { return Iterator(nullptr); }
+	Iterator end() { return Iterator(nullptr); }
 
 	void print() {
 		print(root_node);

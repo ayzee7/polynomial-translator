@@ -1,13 +1,22 @@
-#pragma once
-#include <iostream>
-#include <windows.h>
-class Interface
-{
-public:
-	static void print_ch(const char& ch);
-	static void set_color(int color);
-	static void print_red_ch(const char& ch);
-	static void delete_ch();
-	static void clear_console();
-	static void instraction();
-};
+//#pragma once
+#ifndef INTERFACE_H
+#define INTERFACE_H
+
+
+#include "polinom.h"
+#include <exception>
+#include <string>
+
+int startup();
+
+std::string await_input();
+
+void output_line(std::string str);
+
+void output_help();
+
+void output_error(std::exception error);
+
+void output_result(Polynom& result);
+
+#endif

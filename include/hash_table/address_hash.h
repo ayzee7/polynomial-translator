@@ -138,7 +138,7 @@ public:
 		for (size_t i = 0; i < m; i++) {
 			size_t index = probe(key, i);
 			if (data[index].key == key) {
-				throw "Cannot overwrite existing key, must delete it first.";
+				throw std::exception("Cannot overwrite existing key, must delete it first.");
 			}
 			if (data[index].status != Status::OCCUPIED) {
 				data[index] = Entry<TKey, TValue>(key, value);
@@ -189,7 +189,7 @@ public:
 
 	TValue& operator[](const TKey& key) {
 		auto it = find(key);
-		if (it == end()) throw "Index overflow.";
+		if (it == end()) throw std::exception("Index overflow.");
 		return it.value();
 	}
 

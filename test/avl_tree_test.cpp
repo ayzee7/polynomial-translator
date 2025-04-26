@@ -19,7 +19,7 @@ TEST(AVLTree, CanInsert) {
 	t.insert("e", p5);
 	t.insert("d", p4);
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 
@@ -44,7 +44,7 @@ TEST(AVLTree, CanEraseLeaf) {
 
 	t.erase("b");
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -69,7 +69,7 @@ TEST(AVLTree, CanEraseSubrootWithOneChild) {
 
 	EXPECT_TRUE(t.is_balanced());
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -94,7 +94,7 @@ TEST(AVLTree, CanEraseRoot) {
 
 	EXPECT_TRUE(t.is_balanced());
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -116,7 +116,7 @@ TEST(AVLTree, StressTestInsertHundredThousand) {
 	}
 	auto fin = std::chrono::high_resolution_clock::now();
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
-	ASSERT_NE(t.begin(), t.null());
+	ASSERT_NE(t.begin(), t.end());
 }
 
 TEST(AVLTree, StressTestInsertMillion) {
@@ -132,7 +132,7 @@ TEST(AVLTree, StressTestInsertMillion) {
 	}
 	auto fin = std::chrono::high_resolution_clock::now();
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
-	ASSERT_NE(t.begin(), t.null());
+	ASSERT_NE(t.begin(), t.end());
 }
 
 TEST(AVLTree, StressTestInsertTenMillion) {
@@ -148,5 +148,5 @@ TEST(AVLTree, StressTestInsertTenMillion) {
 	}
 	auto fin = std::chrono::high_resolution_clock::now();
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
-	ASSERT_NE(t.begin(), t.null());
+	ASSERT_NE(t.begin(), t.end());
 }

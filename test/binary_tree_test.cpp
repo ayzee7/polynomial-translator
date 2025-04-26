@@ -12,12 +12,12 @@ TEST(BSTreeIterator, CanCreateIterators) {
 	BSTree<std::string, Polynom> table;
 	EXPECT_NO_THROW(table.begin());
 	EXPECT_NO_THROW(table.root());
-	EXPECT_NO_THROW(table.null());
+	EXPECT_NO_THROW(table.end());
 }
 
 TEST(BSTreeIterator, CanIterateThroughTableUsingIterator) {
 	BSTree<std::string, Polynom> table;
-	ASSERT_NO_THROW(for (auto i = table.begin(); i != table.null(); ++i));
+	ASSERT_NO_THROW(for (auto i = table.begin(); i != table.end(); ++i));
 }
 
 //	Binary search tree tests	
@@ -35,7 +35,7 @@ TEST(BinarySearchTree, CanInsert) {
 	t.insert("e", p5);
 	t.insert("d", p4);
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -66,7 +66,7 @@ TEST(BinarySearchTree, CanEraseLeaf) {
 	t.erase("b");
 	auto keys = t.print_keys();
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	std::string keys_str;
@@ -86,7 +86,7 @@ TEST(BinarySearchTree, CanEraseSubrootWithOneChild) {
 	t.insert("b", p2);
 	t.erase("a");
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -107,7 +107,7 @@ TEST(BinarySearchTree, CanEraseRoot) {
 	t.insert("b", p2);
 	t.erase("c");
 
-	for (auto i = t.begin(); i != t.null(); ++i) {
+	for (auto i = t.begin(); i != t.end(); ++i) {
 		std::cout << i.key();
 	}
 	auto keys = t.print_keys();
@@ -118,7 +118,7 @@ TEST(BinarySearchTree, CanEraseRoot) {
 
 TEST(BinarySearchTree, ErasingNonExistingNodeReturnsNullIterator) {
 	BSTree<std::string, Polynom> t;
-	ASSERT_EQ(t.erase("c"), t.null());
+	ASSERT_EQ(t.erase("c"), t.end());
 }
 
 TEST(BinarySearchTree, CanFind) {
@@ -143,7 +143,7 @@ TEST(BinarySearchTree, CanFind) {
 
 TEST(BinarySearchTree, FindingNonExistingNodeReturnsNullIterator) {
 	BSTree<std::string, Polynom> t;
-	ASSERT_EQ(t.find("c"), t.null());
+	ASSERT_EQ(t.find("c"), t.end());
 }
 
 TEST(BinarySearchTree, StressTestInsertHundredThousand) {
@@ -159,7 +159,7 @@ TEST(BinarySearchTree, StressTestInsertHundredThousand) {
 	}
 	auto fin = std::chrono::high_resolution_clock::now();
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
-	ASSERT_NE(t.begin(), t.null());
+	ASSERT_NE(t.begin(), t.end());
 }
 
 TEST(BinarySearchTree, StressTestInsertMillion) {
@@ -175,7 +175,7 @@ TEST(BinarySearchTree, StressTestInsertMillion) {
 	}
 	auto fin = std::chrono::high_resolution_clock::now();
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
-	ASSERT_NE(t.begin(), t.null());
+	ASSERT_NE(t.begin(), t.end());
 }
 
 TEST(BinarySearchTree, StressTestInsertTenMillion) {
@@ -191,5 +191,5 @@ TEST(BinarySearchTree, StressTestInsertTenMillion) {
 	}
 	auto fin = std::chrono::high_resolution_clock::now();
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
-	ASSERT_NE(t.begin(), t.null());
+	ASSERT_NE(t.begin(), t.end());
 }

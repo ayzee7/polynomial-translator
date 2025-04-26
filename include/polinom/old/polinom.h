@@ -1,7 +1,4 @@
-//#pragma once
-#ifndef POLYNOM_H
-#define POLYNOM_H
-
+#pragma once
 #include "List.h"
 #include <iostream>
 
@@ -21,8 +18,6 @@ public:
 	Monom();
 
 	Monom(double coef, int powX, int powY, int powZ);
-
-	double get_coef();
 
 	static int compare(const Monom& first, const Monom& second);
 
@@ -86,5 +81,3 @@ public:
 
 	int size();
 };
-
-#endif
