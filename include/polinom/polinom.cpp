@@ -378,7 +378,7 @@ Polynom Polynom::operator/(int mult) {
 	return *res;
 }
 
-bool Polynom::operator==(const Polynom& other) {
+bool Polynom::operator==(const Polynom& other) const {
 	if (polynom.size() != other.polynom.size()) {
 		return false;
 	}
@@ -392,7 +392,7 @@ bool Polynom::operator==(const Polynom& other) {
 	return true;
 }
 
-bool Polynom::operator!=(const Polynom& other) {
+bool Polynom::operator!=(const Polynom& other) const {
 	return !(*this == other);
 }
 

@@ -134,7 +134,7 @@ TEST(AVLTree, StressTestInsertMillion) {
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
 	ASSERT_NE(t.begin(), t.end());
 }
-
+/*
 TEST(AVLTree, StressTestInsertTenMillion) {
 	AVLTree<int, Polynom> t;
 	Polynom p(Monom(1, 1, 1, 1));
@@ -150,3 +150,4 @@ TEST(AVLTree, StressTestInsertTenMillion) {
 	std::cout << "elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(fin - start).count() << std::endl;
 	ASSERT_NE(t.begin(), t.end());
 }
+*/

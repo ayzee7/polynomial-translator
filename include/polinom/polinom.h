@@ -78,9 +78,9 @@ public:
 
 	Polynom operator/(int mult);
 
-	bool operator==(const Polynom& other);
+	bool operator==(const Polynom& other) const;
 
-	bool operator!=(const Polynom& other);
+	bool operator!=(const Polynom& other) const;
 
 	void printout();
 

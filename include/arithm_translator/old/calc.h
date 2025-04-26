@@ -3,8 +3,9 @@
 #include <vector>
 #include <map>
 #include "parser.h"
+#include "polinom.h"
 class Calc
 {
 public:
-	static double Calculate(std::vector<Term>& post_str, std::vector<double>& operands);
+	static Polynom Calculate(std::vector<Term::Type>& post_str, std::vector<Polynom>& operands, std::vector<std::string>& operators);
 };

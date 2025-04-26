@@ -1,56 +1,52 @@
 #include "calc.h"
 
-double Calc::Calculate(std::vector<Term>& post_str, std::vector<double>& operands)
+Polynom Calc::Calculate(std::vector<Term::Type>& post_str, std::vector<Polynom>& operands, std::vector<std::string>& operators)
 {
-	Stack<std::vector, double> s1(std::vector<double> {});
-	double left, right = 0;
+	Stack<std::vector, Polynom> s1(std::vector<Polynom> {});
+	Polynom left, right;
 	int i = 0;
-	for (Term t : post_str)
+	int j = 0;
+	for (Term::Type t : post_str)
 	{
 		
-		switch (t.get_type())
+		switch (t)
 		{
-		case Term::Type::NUMBER:
+		case Term::Type::MONOM:
 			s1.push(operands[i]);
 			i++;
 			break;
 		case Term::Type::OPERATOR:
-			if (t.get_value() == "+")
+
+			if (operators[j] == "+")
 			{
 				right = s1.top();
 				s1.pop();
 				left = s1.top();
 				s1.pop();
 				s1.push(left + right);
+				j++;
 				break;
 			}
-			if (t.get_value() == "-")
+			if (operators[j] == "-")
 			{
 				right = s1.top();
 				s1.pop();
 				left = s1.top();
 				s1.pop();
 				s1.push(left - right);
+				j++;
 				break;
 			}
-			if (t.get_value() == "*")
+			if (operators[j] == "*")
 			{
 				right = s1.top();
 				s1.pop();
 				left = s1.top();
 				s1.pop();
 				s1.push(left * right);
+				j++;
 				break;
 			}
-			if (t.get_value() == "/")
-			{
-				right = s1.top();
-				s1.pop();
-				left = s1.top();
-				s1.pop();
-				s1.push(left / right);//�������� �� ����?
-				break;
-			}	
 		}
 	}
 	return s1.top();
