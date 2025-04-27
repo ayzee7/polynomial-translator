@@ -56,7 +56,8 @@ void output_help() {
 		<< "You cannot save multiple values using one program variable.\n"
 		<< "To delete declared program variable, use keyword \"delete\" with a name of a variable you need to delete.\n"
 		<< "Example: delete a\n"
-		<< "If expression contains errors, a message will appear in console, providing additional context." << std::endl;
+		<< "If expression contains errors, a message will appear in console, providing additional context.\n"
+		<< "To exit the program, simply close the console window." << std::endl;
 }
 
 void output_error(std::exception error) {
