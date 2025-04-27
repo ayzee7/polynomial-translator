@@ -302,37 +302,11 @@ TEST_F(RBTreeStringPolynomTest, insert_rl_rotation_properties_second) {
     EXPECT_TRUE(tree.verify_properties());
 }
 
-TEST_F(RBTreeStringPolynomTest, insert_duplicate_key_updates_value_iterator) {
+TEST_F(RBTreeStringPolynomTest, cant_insert_duplicate) {
     tree.insert("a", P10);
     tree.insert("b", P20);
-    auto it = tree.insert("a", P5);
-    EXPECT_NE(it, tree.end());
-    EXPECT_EQ(it->value, P5);
+    ASSERT_ANY_THROW(tree.insert("a", P5));
 }
-TEST_F(RBTreeStringPolynomTest, insert_duplicate_key_updates_value_find) {
-    tree.insert("a", P10);
-    tree.insert("b", P20);
-    tree.insert("a", P5);
-    auto found_it = tree.find("a");
-    EXPECT_NE(found_it, tree.end());
-    EXPECT_EQ(found_it->value, P5);
-}
-
-TEST_F(RBTreeStringPolynomTest, insert_duplicate_key_does_not_change_element_count) {
-    tree.insert("a", P10);
-    tree.insert("b", P20);
-    ASSERT_EQ(count_elements(), 2);
-    tree.insert("a", P5);
-    EXPECT_EQ(count_elements(), 2);
-}
-
-TEST_F(RBTreeStringPolynomTest, insert_duplicate_key_maintains_properties) {
-    tree.insert("a", P10);
-    tree.insert("b", P20);
-    tree.insert("a", P5);
-    EXPECT_TRUE(tree.verify_properties());
-}
-
 
 TEST_F(RBTreeStringPolynomTest, erase_non_existent_key_returns_end) {
     tree.insert("a", P10);
