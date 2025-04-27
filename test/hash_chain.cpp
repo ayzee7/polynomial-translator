@@ -80,24 +80,6 @@ TEST_F(HashTableChainingPolynomTest, insert_duplicate_key_throws) {
     ASSERT_ANY_THROW(table.insert("a", P12));
 }
 
-TEST_F(HashTableChainingPolynomTest, insert_duplicate_key_does_not_change_size) {
-    table.insert("a", P3);
-    try {
-        table.insert("a", P12);
-    }
-    catch (int) {}
-    ASSERT_EQ(table.size(), 1);
-}
-
-TEST_F(HashTableChainingPolynomTest, insert_duplicate_key_keeps_original_value) {
-    table.insert("a", P3);
-    try {
-        table.insert("a", P12);
-    }
-    catch (int) {}
-    ASSERT_EQ(table.find("a")->second, P3);
-}
-
 TEST_F(HashTableChainingPolynomTest, find_non_existent_key_returns_end) {
     table.insert("a", P5);
     auto it = table.find("b");

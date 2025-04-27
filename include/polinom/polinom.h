@@ -85,6 +85,8 @@ public:
 	void printout();
 
 	int size();
+
+	friend std::ostream& operator<<(std::ostream& ostr, const Polynom& m);
 };
 
 #endif
