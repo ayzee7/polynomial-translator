@@ -123,7 +123,14 @@ bool Monom::operator==(const Monom& other) {
 bool Monom::operator!=(const Monom& other) {
 	return !(*this == other);
 }
-
+//std::ostream& operator<<(std::ostream& ostr, const Monom& m)
+//{
+//	ostr << "k = " << m.coef << std::endl;
+//	ostr << "powX = " << m.powX << std::endl;
+//	ostr << "powY = " << m.powY << std::endl;
+//	ostr << "powZ = " << m.powZ << std::endl;
+//	return ostr;
+//}
 std::ostream& operator<<(std::ostream& ostr, const Monom& m) {
 	if (!(m.coef == 1 && (m.powX || m.powY || m.powZ))) {
 		if (m.coef == -1) {
@@ -402,4 +409,14 @@ void Polynom::printout() {
 
 int Polynom::size() {
 	return polynom.size();
+}
+std::ostream& operator<<(std::ostream& ostr, const Polynom& m)
+{
+
+	for (List<Monom>::Iterator it = m.polynom.begin(); it != m.polynom.end(); it++)
+	{
+		ostr << it.value();
+		ostr << std::endl;
+	}
+	return ostr;
 }
