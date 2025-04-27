@@ -129,6 +129,7 @@ public:
 			std::cout << "0";
 		}
 		else {
+			size_t zero_counter = 0;
 			for (Iterator i = this->begin(); i != this->end(); ++i) {
 				if (i.value().get_coef()) {
 					std::cout << i.value();
@@ -136,11 +137,14 @@ public:
 						if (i.next().value().get_coef() > 0) {
 							std::cout << "+";
 						}
-						else if (i.next().value().get_coef() < 0) {
-							std::cout << "-";
-						}
 					}
 				}
+				else {
+					zero_counter++;
+				}
+			}
+			if (zero_counter == sz) {
+				std::cout << "0";
 			}
 		}
 		std::cout << std::endl;

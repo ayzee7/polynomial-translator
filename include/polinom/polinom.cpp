@@ -126,7 +126,7 @@ bool Monom::operator!=(const Monom& other) {
 
 std::ostream& operator<<(std::ostream& ostr, const Monom& m) {
 	if (!(m.coef == 1 && (m.powX || m.powY || m.powZ))) {
-		if (m.coef == -1) {
+		if (m.coef == -1 && (m.powX || m.powY || m.powZ)) {
 			ostr << "-";
 		}
 		else {
