@@ -13,7 +13,9 @@ const Polynom P15(Monom(15, 0, 0, 0));
 const Polynom P17(Monom(17, 0, 0, 0));
 const Polynom P20(Monom(20, 0, 0, 0));
 const Polynom P25(Monom(25, 0, 0, 0));
-
+const Polynom P1(Monom(1, 0, 0, 0));
+const Polynom P4(Monom(4, 0, 0, 0));
+const Polynom P14(Monom(14, 0, 0, 0));
 
 class RBTreeStringPolynomTest : public ::testing::Test {
 protected:
@@ -665,4 +667,36 @@ TEST_F(RBTreeStringPolynomTest, stress_test_insert_erase_verify) {
     for (const auto& deleted_key : keys_to_delete) {
         EXPECT_FALSE(key_exists(deleted_key));
     }
+}
+
+TEST_F(RBTreeStringPolynomTest, DeleteRoot_SuccessorRed_NotDirectChild) {
+
+    tree.insert("4", P10);
+    tree.insert("2", P5); 
+    tree.insert("6", P20);
+    tree.insert("5", P15); 
+    tree.insert("1", P25);
+    tree.insert("3", P14);
+
+    ASSERT_EQ(count_elements(), 6);
+    ASSERT_TRUE(tree.verify_properties());
+    ASSERT_TRUE(key_exists("4"));
+    ASSERT_TRUE(key_exists("5"));
+
+    tree.erase("4");
+
+    EXPECT_EQ(count_elements(), 5);
+    EXPECT_FALSE(key_exists("4"));
+    EXPECT_TRUE(key_exists("2"));
+    EXPECT_TRUE(key_exists("3"));
+    EXPECT_TRUE(key_exists("5"));
+    EXPECT_TRUE(key_exists("6"));
+    EXPECT_TRUE(key_exists("1"));
+
+
+    EXPECT_TRUE(tree.verify_properties());
+
+    std::vector<std::string> expected_keys = { "1", "2", "3", "5", "6" };
+    std::vector<std::string> actual_keys = get_keys_inorder();
+    EXPECT_EQ(actual_keys, expected_keys);
 }
