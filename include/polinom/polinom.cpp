@@ -33,13 +33,13 @@ Monom::Monom() {}
 
 Monom::Monom(double coef, int powX, int powY, int powZ) {
 	if (powX < 0 || powX > 9) {
-		throw std::exception("invalid x power value");
+		throw std::exception("Runtime error: invalid \'x\' power value");
 	}
 	if (powY < 0 || powY > 9) {
-		throw std::exception("invalid y power value");
+		throw std::exception("Runtime error: invalid \'y\' power value");
 	}
 	if (powZ < 0 || powZ > 9) {
-		throw std::exception("invalid z power value");
+		throw std::exception("Runtime error: invalid \'z\' power value");
 	}
 	this->coef = coef;
 	this->powX = powX;
@@ -50,7 +50,7 @@ Monom::Monom(double coef, int powX, int powY, int powZ) {
 Monom Monom::operator+(const Monom& other) {
 	Monom res = *this;
 	if (compare(*this, other)) {
-		throw std::exception("invalid operation");
+		throw std::exception("Runtime error: invalid operation");
 	}
 	else res.coef += other.coef;
 	return res;
@@ -59,7 +59,7 @@ Monom Monom::operator+(const Monom& other) {
 Monom Monom::operator-(const Monom& other) {
 	Monom res = *this;
 	if (compare(*this, other)) {
-		throw std::exception("invalid operation");
+		throw std::exception("Runtime error: invalid operation");
 	}
 	else res.coef -= other.coef;
 	return res;
@@ -70,15 +70,15 @@ Monom Monom::operator*(const Monom& other) {
 	res.coef *= other.coef;
 	res.powX += other.powX;
 	if (res.powX < 0 || res.powX > 9) {
-		throw std::exception("x power overflow");
+		throw std::exception("Runtime error: \'x\' power overflow");
 	}
 	res.powY += other.powY;
 	if (res.powY < 0 || res.powY > 9) {
-		throw std::exception("y power overflow");
+		throw std::exception("Runtime error: \'y\' power overflow");
 	}
 	res.powZ += other.powZ;
 	if (res.powZ < 0 || res.powZ > 9) {
-		throw std::exception("z power overflow");
+		throw std::exception("Runtime error: \'z\' power overflow");
 	}
 	return res;
 }
@@ -94,15 +94,15 @@ Monom Monom::operator/(const Monom& other) {
 	res.coef /= other.coef;
 	res.powX -= other.powX;
 	if (res.powX < 0 || res.powX > 9) {
-		throw std::exception("x power overflow");
+		throw std::exception("Runtime error: \'x\' power overflow");
 	}
 	res.powY -= other.powY;
 	if (res.powY < 0 || res.powY > 9) {
-		throw std::exception("y power overflow");
+		throw std::exception("Runtime error: \'y\' power overflow");
 	}
 	res.powZ -= other.powZ;
 	if (res.powZ < 0 || res.powZ > 9) {
-		throw std::exception("z power overflow");
+		throw std::exception("Runtime error: \'z\' power overflow");
 	}
 	return res;
 }
@@ -349,6 +349,9 @@ Polynom Polynom::operator*(int mult) {
 }
 
 Polynom Polynom::operator/(const Polynom& other) {
+	if (other.polynom.size() > 1) {
+		throw std::exception("Runtime error: can only divide by monom.");
+	}
 	Polynom* res_sum = new Polynom();
 	for (auto ptr1 = polynom.begin(); ptr1 != polynom.end(); ++ptr1) {
 		Polynom res;

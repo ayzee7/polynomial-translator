@@ -43,7 +43,7 @@ void output_help() {
 		<< "This program is designed to calculate arithmetical expressions with polynoms.\n"
 		<< "In order to start calculations, simply input the expression in console.\n" 
 		<< "Program will output the result after you press ENTER.\n"
-		<< "In expression, integer and floating-point numbers, arithmetical signs(\'+\', \'-\', \'*\', \'/\') and brackets can be used.\n"
+		<< "In expression, integer and floating-point numbers, arithmetical signs (\'+\', \'-\', \'*\', \'/\') and brackets can be used.\n"
 		<< "To input a floating-point number, use \'.\' divider.\n"
 		<< "You can use math variables in polynoms.\n"
 		<< "In order to do so, use \'x\', \'y\' and \'z\' letters with corresponding powers, divided by \'^\'.\n"
